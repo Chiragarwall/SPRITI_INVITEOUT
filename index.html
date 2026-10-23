@@ -5,6 +5,13 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <meta name="theme-color" content="#1a0b14">
 <title>SPRITI | Sparsh & Prakriti</title>
+<script>
+/* Always begin at the passport cover: no scroll restore, no #hash jump, no bfcache resume */
+if ("scrollRestoration" in history) history.scrollRestoration = "manual";
+if (location.hash) history.replaceState(null, "", location.pathname + location.search);
+window.scrollTo(0, 0);
+window.addEventListener("pageshow", function (e) { if (e.persisted) location.reload(); });
+</script>
 
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;1,400;1,600&family=DM+Sans:wght@300;400;500&family=Parisienne&display=swap" rel="stylesheet">
@@ -127,7 +134,7 @@ a { color: inherit; }
 /* ─── HERO ───────────────────────────────────────── */
 .hero {
   min-height: 100svh;
-  padding: 50px 24px;
+  padding: 140px 24px 50px;
   display: grid;
   place-items: center;
   text-align: center;
@@ -288,67 +295,76 @@ a { color: inherit; }
   border: 1px solid rgba(201,167,103,.25);
   pointer-events: none;
 }
+.music-toggle {
+  position: fixed; top: 16px; right: 16px; z-index: 998;
+  width: 40px; height: 40px; border-radius: 50%;
+  display: grid; place-items: center; padding: 0; cursor: pointer;
+  color: var(--gold-light); background: rgba(26,11,20,.88);
+  border: 1px solid #c9a76755; backdrop-filter: blur(10px);
+  transition: color .2s, border-color .2s;
+}
+.music-toggle:hover { color: var(--gold); border-color: var(--gold); }
+.music-toggle:focus-visible { outline: 2px solid var(--gold); outline-offset: 3px; }
+.music-toggle .mt-off, .music-toggle.muted .mt-on { display: none; }
+.music-toggle.muted .mt-off { display: block; }
+.music-toggle.playing:not(.muted)::after {
+  content: ""; position: absolute; inset: -5px; border-radius: 50%;
+  border: 1px solid rgba(201,167,103,.45); animation: mt-pulse 2.4s ease-out infinite;
+}
+@keyframes mt-pulse { from { transform: scale(.85); opacity: .9; } to { transform: scale(1.25); opacity: 0; } }
 .envelope-wrap.opened {
   opacity: 0;
   visibility: hidden;
   pointer-events: none;
 }
-/* ── Envelope shell ── */
+/* ── Passport (closed) ── */
 .envelope {
   position: relative;
-  width: min(78vw, 320px);
-  aspect-ratio: 3/2;
-  perspective: 700px;
-  transform-style: preserve-3d;
+  width: min(56vw, 230px);
+  aspect-ratio: 5 / 7;
+  perspective: 900px;
   z-index: 1;
 }
-
-/* ── Envelope body ── */
-.env-body {
-  position: absolute; inset: 0;
-  background: linear-gradient(160deg, #f7edd4, #e5c97a, #f0dfa0);
-  border: 1px solid #b8924c;
-  box-shadow: 0 20px 60px rgba(0,0,0,.5);
-  z-index: 2;
-}
-.env-body::before {
+/* inner page, revealed when the cover swings open */
+.envelope::before {
   content: "";
-  position: absolute; inset: 0;
-  background: linear-gradient(to bottom, rgba(255,255,255,.22) 0%, transparent 35%);
-  pointer-events: none;
+  position: absolute; inset: 0; z-index: 1;
+  border-radius: 4px 10px 10px 4px;
+  background: repeating-linear-gradient(0deg, rgba(201,167,103,.1) 0 2px, transparent 2px 5px), #fbf5e6;
+  box-shadow: 0 20px 60px rgba(0,0,0,.5);
 }
+.env-body {
+  position: absolute; inset: 0; z-index: 2;
+  border-radius: 4px 10px 10px 4px;
+  background: radial-gradient(circle at 30% 20%, #5a2840, var(--burgundy) 60%, var(--wine));
+  border: 2px solid rgba(201,167,103,.55);
+  box-shadow: 0 20px 60px rgba(0,0,0,.5), inset 0 0 0 7px rgba(26,11,20,.5), inset 0 0 0 8px rgba(201,167,103,.25);
+  color: var(--gold); text-align: center;
+  transform-origin: left center;
+  backface-visibility: hidden;
+  transition: transform 1s cubic-bezier(.6,0,.2,1), opacity .4s ease .6s;
+}
+.env-body span { position: absolute; left: 0; right: 0; }
+.eb-top   { top: 11%; font-size: clamp(.45rem, 1.8vw, .58rem); letter-spacing: .4em; text-transform: uppercase; }
+.eb-title { top: 61%; font: italic 400 clamp(1.7rem, 7vw, 2.3rem)/1 "Cormorant Garamond", serif; color: var(--gold-light); }
+.eb-logo  { top: 78%; font-size: clamp(.5rem, 2vw, .66rem); letter-spacing: .5em; color: rgba(234,215,170,.7); }
+.envelope.open .env-body { transform: rotateY(-110deg); opacity: 0; pointer-events: none; }
 
-/* ── Triangular flap ── */
-.env-flap {
-  position: absolute;
-  top: 0; left: 0; right: 0;
-  height: 55%;
-  background: linear-gradient(165deg, #f5e5a8, #c9a040, #ddb84a);
-  clip-path: polygon(0 0, 100% 0, 50% 100%);
-  z-index: 3;
-  filter: drop-shadow(0 6px 10px rgba(0,0,0,.2));
-  transition: opacity 0.25s ease;
-}
-.envelope.open .env-flap {
-  opacity: 0;
-  pointer-events: none;
-}
-
-/* ── Wax seal ── */
+/* ── Gold emblem on the cover ── */
 .env-seal {
   position: absolute;
-  top: 50%; left: 50%;
+  top: 38%; left: 50%;
   transform: translate(-50%, -50%);
-  width: 52px; height: 52px;
-  background: radial-gradient(circle at 38% 32%, #c0392b, #7b1a14, #3d0a08);
+  width: 26%; aspect-ratio: 1;
   border-radius: 50%;
-  border: 2px solid rgba(220,160,80,.7);
+  border: 1px solid var(--gold);
+  background: rgba(201,167,103,.08);
   display: grid; place-items: center;
-  font-size: 1.1rem;
-  color: rgba(255,220,160,.95);
+  font-size: clamp(1.1rem, 4.4vw, 1.6rem);
+  color: var(--gold);
   z-index: 5;
-  box-shadow: 0 4px 14px rgba(0,0,0,.55), inset 0 1px 3px rgba(255,180,80,.25);
-  transition: opacity .3s .25s, transform .3s .25s;
+  box-shadow: 0 0 18px rgba(201,167,103,.25);
+  transition: opacity .3s .1s, transform .3s .1s;
 }
 .envelope.open .env-seal { opacity: 0; transform: translate(-50%,-50%) scale(.4); }
 
@@ -398,16 +414,12 @@ a { color: inherit; }
 .env-corner.bl { bottom: clamp(14px,3vw,28px); left: clamp(14px,3vw,28px); transform: scaleY(-1); }
 .env-corner.br { bottom: clamp(14px,3vw,28px); right: clamp(14px,3vw,28px); transform: scale(-1); }
 
-/* ─── INTRO ──────────────────────────────────────── */
-.intro {
-  background: var(--cream);
-  text-align: center;
+/* ─── STORY (intro + timeline) ───────────────────── */
+.story-lead {
+  max-width: 560px; margin: 14px auto 0;
+  font: 1.3rem/1.65 "Cormorant Garamond", serif; color: #715f65;
 }
-.intro p {
-  max-width: 640px;
-  margin: 22px auto;
-  font: 1.35rem/1.65 "Cormorant Garamond", serif;
-}
+.story-close { margin-top: 6px; }
 .signature {
   font: 2.4rem "Parisienne", cursive;
   color: var(--burgundy);
@@ -445,6 +457,14 @@ a { color: inherit; }
   align-items: center;
   margin-top: 48px;
 }
+/* On ALL mobile sizes — single column, card centered */
+@media (max-width: 900px) {
+  .scratch-layout {
+    grid-template-columns: 1fr;
+    gap: 36px;
+  }
+  .scratch-description { text-align: center; }
+}
 .scratch-description h3 {
   font-size: clamp(2.4rem, 5vw, 4rem);
   line-height: .95; margin: 20px 0;
@@ -452,10 +472,12 @@ a { color: inherit; }
 .scratch-description p { color: #dfcfca; line-height: 1.9; }
 .scratch-card {
   position: relative;
-  isolation: isolate; /* own stacking context — canvas z-index is local to this */
-  max-width: 390px; width: 100%;
-  aspect-ratio: 4/5;
-  margin: auto;
+  isolation: isolate;
+  /* fluid width — never wider than viewport, always centered */
+  width: min(88vw, 340px);
+  max-width: 340px;
+  aspect-ratio: 2/3;
+  margin: 0 auto;
   padding: 4px;
   background: linear-gradient(145deg, #f8ecd4, #c6a055, #e8d5a3, #a87c3a);
   background-size: 300% 300%;
@@ -686,7 +708,7 @@ a { color: inherit; }
 /* ─── STORY TIMELINE ─────────────────────────────── */
 .story { background: var(--blush); }
 .timeline {
-  max-width: 700px; margin: 55px auto 0;
+  max-width: 700px; margin: 36px auto 0;
   position: relative;
 }
 .timeline::before {
@@ -699,7 +721,7 @@ a { color: inherit; }
 }
 .timeline.line-drawn::before { transform: scaleY(1); }
 .chapter {
-  padding: 0 0 46px 48px;
+  padding: 0 0 30px 48px;
   position: relative;
   opacity: 0; transform: translateX(-15px);
   transition: opacity .6s ease, transform .6s ease;
@@ -719,84 +741,6 @@ a { color: inherit; }
 }
 .chapter h3 { font-size: 2rem; margin: 9px 0; }
 .chapter p  { line-height: 1.85; color: #715f65; margin: 0; }
-.story-quote {
-  text-align: center;
-  font: italic 1.5rem "Cormorant Garamond", serif;
-  color: var(--rose);
-  margin-top: 40px;
-  padding: 0 20px;
-}
-
-/* ─── MUSIC / VINYL ──────────────────────────────── */
-.music { background: var(--burgundy); color: var(--cream); }
-.music p { max-width: 560px; margin: 20px auto; line-height: 1.8; color: #e0cfd0; }
-.vinyl-wrap {
-  position: relative;
-  width: 145px; height: 145px;
-  margin: 32px auto;
-  cursor: pointer;
-}
-.record {
-  width: 100%; height: 100%;
-  border-radius: 50%;
-  background:
-    repeating-radial-gradient(circle, #160e15 0px 3px, #3a1f2e 4px 6px);
-  border: 2px solid #c9a76760;
-  display: grid; place-items: center;
-  transition: transform .5s ease;
-  position: relative;
-}
-.record::after {
-  content: "";
-  position: absolute;
-  width: 30%; height: 30%;
-  border-radius: 50%;
-  background: radial-gradient(circle, #c9a767, #6e4520);
-  box-shadow: 0 0 0 3px #1a0b14;
-}
-.record img {
-  width: 44px; height: 44px;
-  object-fit: contain;
-  position: relative; z-index: 1;
-  border-radius: 50%;
-}
-.vinyl-wrap.spinning .record { animation: spin-vinyl 3s linear infinite; }
-@keyframes spin-vinyl { to { transform: rotate(360deg); } }
-.vinyl-arm {
-  position: absolute;
-  right: -10px; top: -8px;
-  width: 50px; height: 80px;
-  transform-origin: top right;
-  transform: rotate(-30deg);
-  transition: transform 1s ease;
-}
-.vinyl-wrap.spinning .vinyl-arm { transform: rotate(-8deg); }
-.vinyl-arm-inner {
-  position: absolute;
-  right: 6px; top: 8px;
-  width: 3px; height: 70px;
-  background: linear-gradient(to bottom, #c9a767, #8a6230);
-  border-radius: 2px;
-  transform-origin: top center;
-}
-.vinyl-arm-head {
-  position: absolute;
-  right: 4px; bottom: 0;
-  width: 7px; height: 7px;
-  background: var(--gold);
-  border-radius: 50%;
-}
-audio { width: 100%; max-width: 430px; margin-top: 18px; }
-.music-note {
-  display: inline-block;
-  font-size: 1.4rem;
-  animation: bounce-note .8s ease-in-out infinite alternate;
-}
-@keyframes bounce-note {
-  from { transform: translateY(0); }
-  to   { transform: translateY(-5px); }
-}
-
 /* ─── #SPRITI ANIMATED LOGO ──────────────────────── */
 .spriti-logo {
   display: inline-flex;
@@ -824,131 +768,199 @@ audio { width: 100%; max-width: 430px; margin-top: 18px; }
 .spriti-logo:hover .sl-p  { color: #ffe8b0; transform: translateY(3px)  scale(1.1); }
 .spriti-logo:hover .sl-mid { opacity: .5; }
 
-/* Used as a badge / pill */
-.spriti-badge {
-  display: inline-flex;
-  align-items: center;
-  gap: 6px;
-  border: 1px solid rgba(201,167,103,.35);
-  padding: 5px 14px;
-  font-size: .62rem;
-  letter-spacing: .12em;
-  color: var(--gold);
-}
-
-/* ─── EVENTS ─────────────────────────────────────── */
+/* ─── EVENTS · COMBINATION LOCK → PASSPORT ───────────── */
 .events { background: #f0e8d8; }
-.event-grid {
-  display: grid;
-  grid-template-columns: repeat(3, 1fr);
-  gap: 18px; margin-top: 46px;
-}
-.event {
-  text-align: center;
-  padding: 32px 18px;
-  position: relative;
-  overflow: hidden;
-  transition: transform .35s ease, box-shadow .35s ease;
-  border-radius: 2px;
-}
-.event::before {
-  content: "";
-  position: absolute; inset: 0;
-  background: linear-gradient(160deg, rgba(255,255,255,.12) 0%, transparent 50%);
-  pointer-events: none;
-}
-.event:hover { transform: translateY(-6px); }
+[hidden] { display: none !important; }
+.passport-stage { margin-top: 46px; display: flex; justify-content: center; }
 
-/* ── Engagement: deep navy + champagne gold ── */
-.event-engagement {
-  background: linear-gradient(160deg, #1a1f3a 0%, #0f1428 100%);
-  border: 1px solid rgba(201,167,103,.4);
-  color: #e8dfc8;
+/* lock */
+.lock-wrap {
+  text-align: center; width: 100%; max-width: 420px;
 }
-.event-engagement:hover {
-  box-shadow: 0 20px 55px rgba(201,167,103,.25), 0 0 0 1px rgba(201,167,103,.5);
+.lock-wrap.done {
+  opacity: 0 !important; transform: scale(.92) translateY(10px) !important;
+  transition: opacity .6s ease, transform .6s ease;
 }
-.event-engagement .day   { color: #c9a767; }
-.event-engagement .month { color: rgba(201,167,103,.65); }
-.event-engagement h3     { color: #f0e6d0; }
-.event-engagement p      { color: rgba(232,223,200,.7); }
-.event-engagement a      { color: #c9a767; border-color: rgba(201,167,103,.5); }
-.event-engagement .event-badge { background: #c9a767; color: #0f1428; }
-.event-engagement .event-icon-wrap {
-  width: 48px; height: 48px;
-  border-radius: 50%;
-  background: rgba(201,167,103,.12);
-  border: 1px solid rgba(201,167,103,.3);
-  display: grid; place-items: center;
-  margin: 12px auto 8px;
-  font-size: 1.4rem;
+.lock { display: flex; flex-direction: column; align-items: center; }
+.lock-shackle {
+  width: 38%; height: 74px;
+  border: 13px solid #b8913f; border-bottom: 0;
+  border-radius: 80px 80px 0 0;
+  margin-bottom: -2px;
+  transform-origin: 100% 100%;
+  transition: transform .7s cubic-bezier(.3,1.5,.5,1);
 }
-
-/* ── Haldi & Mehndi: warm turmeric yellow + leafy green ── */
-.event-haldi {
-  background: linear-gradient(160deg, #3a2e00 0%, #2a2200 100%);
-  border: 1px solid rgba(220,185,0,.4);
-  color: #f5e8a0;
+.lock.open .lock-shackle { transform: translateY(-14px) rotate(16deg); }
+.lock-body {
+  width: 100%;
+  background: linear-gradient(160deg, #d9b872, #b08a3e 55%, #8f6c28);
+  border-radius: 16px;
+  padding: 16px 12px 12px;
+  border: 1px solid rgba(62,26,42,.25);
+  box-shadow: 0 24px 50px rgba(62,26,42,.28), inset 0 1px 0 rgba(255,255,255,.4);
 }
-.event-haldi:hover {
-  box-shadow: 0 20px 55px rgba(200,170,0,.2), 0 0 0 1px rgba(220,185,0,.5);
+.lock-brand {
+  font-size: .5rem; letter-spacing: .3em; text-transform: uppercase;
+  color: rgba(46,28,36,.7); margin-bottom: 10px;
 }
-.event-haldi .day   { color: #e8c840; }
-.event-haldi .month { color: rgba(220,185,0,.65); }
-.event-haldi h3     { color: #f5e8a0; }
-.event-haldi p      { color: rgba(245,232,160,.7); }
-.event-haldi a      { color: #a8c840; border-color: rgba(168,200,64,.5); }
-.event-haldi .event-badge { background: #c8a800; color: #1a1400; }
-.event-haldi .event-icon-wrap {
-  width: 48px; height: 48px;
-  border-radius: 50%;
-  background: rgba(200,168,0,.15);
-  border: 1px solid rgba(168,200,64,.35);
-  display: grid; place-items: center;
-  margin: 12px auto 8px;
-  font-size: 1.4rem;
+.dials { display: flex; gap: 6px; justify-content: center; }
+.dial {
+  flex: 1; max-width: 56px;
+  display: flex; flex-direction: column; align-items: center; gap: 4px;
+  position: relative; padding-bottom: 12px;
 }
-
-/* ── Wedding: deep crimson red + rose gold ── */
-.event-wedding {
-  background: linear-gradient(160deg, #2d0a0a 0%, #1a0505 100%);
-  border: 1px solid rgba(220,100,80,.4);
-  color: #f5d8d0;
+.dial-btn {
+  width: 100%; height: 30px; border: 0; border-radius: 6px;
+  background: rgba(46,28,36,.18); color: var(--ink);
+  font-size: .6rem; cursor: pointer; transition: background .2s;
 }
-.event-wedding:hover {
-  box-shadow: 0 20px 55px rgba(180,50,50,.25), 0 0 0 1px rgba(220,100,80,.5);
+.dial-btn:hover:not(:disabled) { background: rgba(46,28,36,.32); }
+.dial-btn:disabled { cursor: default; opacity: .5; }
+.dial-window {
+  width: 100%; height: 58px;
+  background: var(--wine); border-radius: 8px;
+  display: grid; place-items: center; overflow: hidden; cursor: pointer;
+  box-shadow: inset 0 4px 10px rgba(0,0,0,.6);
+  user-select: none; -webkit-user-select: none;
 }
-.event-wedding .day   { color: #e87060; }
-.event-wedding .month { color: rgba(220,130,110,.7); }
-.event-wedding h3     { color: #f5d8d0; }
-.event-wedding p      { color: rgba(245,216,208,.7); }
-.event-wedding a      { color: #e8a090; border-color: rgba(220,130,110,.5); }
-.event-wedding .event-badge { background: #c04040; color: #fff0ee; }
-.event-wedding .event-icon-wrap {
-  width: 48px; height: 48px;
-  border-radius: 50%;
-  background: rgba(180,50,50,.15);
-  border: 1px solid rgba(220,100,80,.35);
-  display: grid; place-items: center;
-  margin: 12px auto 8px;
-  font-size: 1.4rem;
+.dial-window:focus-visible, .dial-btn:focus-visible, .lock-skip:focus-visible {
+  outline: 2px solid var(--wine); outline-offset: 2px;
+}
+.dial-letter { font: 600 2rem/1 "Cormorant Garamond", serif; color: var(--gold-light); }
+.dial-letter.tick-up   { animation: tickUp .22s ease; }
+.dial-letter.tick-down { animation: tickDown .22s ease; }
+@keyframes tickUp   { from { transform: translateY(-70%); opacity: 0; } to { transform: none; opacity: 1; } }
+@keyframes tickDown { from { transform: translateY( 70%); opacity: 0; } to { transform: none; opacity: 1; } }
+.dial-led {
+  position: absolute; bottom: 0; width: 6px; height: 6px; border-radius: 50%;
+  background: rgba(46,28,36,.35); transition: background .25s, box-shadow .25s;
+}
+.dial.ok .dial-led { background: #3fbf6a; box-shadow: 0 0 8px #3fbf6a; }
+.dial.ok .dial-letter { color: #fff; }
+.lock-hint { margin: 22px 0 8px; font-size: .85rem; color: #715f65; line-height: 1.7; }
+.lock-hint span { display: block; font-size: .7rem; color: #9e8a6a; letter-spacing: .06em; }
+.lock-skip {
+  background: none; border: 0; border-bottom: 1px solid rgba(125,56,80,.4);
+  color: var(--rose); font: inherit; font-size: .62rem; letter-spacing: .14em;
+  text-transform: uppercase; padding: 0 0 3px; cursor: pointer;
 }
 
-.event .day { font: italic 3.6rem "Cormorant Garamond", serif; line-height: 1; }
-.event .month { font-size: .62rem; letter-spacing: .18em; text-transform: uppercase; }
-.event h3 { font-size: 1.7rem; margin: 8px 0 10px; }
-.event p  { font-size: .8rem; line-height: 1.9; min-height: 60px; }
-.event a  {
-  font-size: .62rem; letter-spacing: .12em;
-  text-transform: uppercase; text-decoration: none;
-  border-bottom-width: 1px; border-bottom-style: solid;
-  padding-bottom: 4px; transition: opacity .2s;
+/* passport */
+.passport { display: none; width: 100%; max-width: 600px; position: relative; perspective: 1600px; }
+.passport.show { display: block; animation: ppIn .8s cubic-bezier(.22,1,.36,1) both; }
+@keyframes ppIn { from { opacity: 0; transform: translateY(30px); } to { opacity: 1; transform: none; } }
+
+.pp-cover {
+  position: absolute; inset: 0 0 auto 0; height: min(100%, 470px); z-index: 5;
+  border-radius: 6px 14px 14px 6px;
+  background: radial-gradient(circle at 30% 20%, #5a2840, var(--burgundy) 60%, var(--wine));
+  border: 2px solid rgba(201,167,103,.5);
+  display: flex; flex-direction: column; align-items: center; justify-content: flex-start;
+  gap: 14px; padding-top: 90px; text-align: center; color: var(--gold);
+  transform-origin: left center; backface-visibility: hidden;
+  transition: transform 1.2s cubic-bezier(.6,0,.2,1), opacity .5s ease .8s, visibility 0s 1.3s;
 }
-.event a:hover { opacity: .7; }
-.event-badge {
-  position: absolute; top: 14px; right: 14px;
-  font-size: .52rem; letter-spacing: .15em;
-  padding: 3px 8px; text-transform: uppercase;
+.passport.open .pp-cover { transform: rotateY(-115deg); opacity: 0; visibility: hidden; pointer-events: none; }
+.pp-cover-top   { font-size: .6rem; letter-spacing: .4em; text-transform: uppercase; }
+.pp-cover-emblem {
+  width: 84px; height: 84px; border-radius: 50%; display: grid; place-items: center;
+  border: 1px solid var(--gold); font-size: 2.2rem;
+}
+.pp-cover-title { font: italic 400 2.6rem/1 "Cormorant Garamond", serif; color: var(--gold-light); }
+.pp-cover-logo  { font-size: .7rem; letter-spacing: .5em; color: rgba(234,215,170,.7); }
+
+.pp-page {
+  background: repeating-linear-gradient(0deg, rgba(201,167,103,.07) 0 2px, transparent 2px 5px), #fbf5e6;
+  border: 1px solid #d8c9a4; border-radius: 6px 14px 14px 6px;
+  box-shadow: 0 30px 70px rgba(62,26,42,.22), inset 14px 0 18px -14px rgba(0,0,0,.25);
+  padding: 30px 26px 24px; color: var(--ink);
+}
+.pp-head {
+  display: flex; justify-content: space-between; align-items: flex-start; gap: 14px;
+  border-bottom: 1px solid rgba(62,26,42,.2); padding-bottom: 14px; margin-bottom: 16px;
+}
+.pp-head small, .pp-meta small {
+  display: block; font-size: .5rem; letter-spacing: .24em; text-transform: uppercase; color: #8a7552;
+}
+.pp-head strong { font: 500 1.6rem/1.15 "Cormorant Garamond", serif; color: var(--burgundy); }
+.pp-code { text-align: right; }
+.pp-meta {
+  display: grid; grid-template-columns: repeat(auto-fit, minmax(130px, 1fr));
+  gap: 12px 18px; margin-bottom: 22px;
+}
+.pp-meta b { font-weight: 500; font-size: .85rem; color: var(--ink); }
+
+.visa {
+  display: grid; grid-template-columns: 130px 1fr; gap: 18px; align-items: center;
+  padding: 18px 14px; margin-bottom: 14px;
+  border: 1px dashed rgba(62,26,42,.25); border-radius: 4px; background: rgba(255,255,255,.35);
+}
+.visa-stamp {
+  justify-self: center; position: relative;
+  width: 118px; aspect-ratio: 1; border: 3px double var(--vc); border-radius: 50%;
+  display: flex; flex-direction: column; align-items: center; justify-content: center;
+  color: var(--vc); text-align: center; line-height: 1.15; mix-blend-mode: multiply;
+  opacity: 0; transform: rotate(var(--rot)) scale(1.9);
+  transition: transform .5s cubic-bezier(.2,1.5,.4,1), opacity .25s ease;
+}
+.visa-stamp::before {
+  content: ""; position: absolute; inset: 6px; border: 1px solid var(--vc); border-radius: 50%; opacity: .6;
+}
+.visa-stamp small { font-size: .45rem; letter-spacing: .24em; font-weight: 500; text-transform: uppercase; }
+.visa-stamp b     { font: italic 600 1.7rem/1.1 "Cormorant Garamond", serif; }
+.visa-stamp span  { font-size: .5rem; letter-spacing: .2em; font-weight: 500; border-top: 1px solid var(--vc); margin-top: 3px; padding-top: 3px; }
+.visa.stamped .visa-stamp { opacity: .88; transform: rotate(var(--rot)) scale(1); }
+.visa-type { font-size: .55rem; letter-spacing: .2em; text-transform: uppercase; color: var(--vc); font-weight: 500; }
+.visa h3   { font-size: 1.7rem; margin: 4px 0 6px; color: var(--burgundy); }
+.visa p    { font-size: .8rem; line-height: 1.8; color: #5c4a52; margin: 0 0 10px; }
+.visa-times { list-style: none; margin: 0 0 8px; padding: 0; font-size: .82rem; line-height: 1.75; color: var(--ink); }
+.visa-times li { display: flex; gap: 10px; align-items: baseline; }
+.visa-times b { flex: 0 0 4.6em; font: 600 .62rem "DM Sans", sans-serif; letter-spacing: .12em; text-transform: uppercase; color: var(--vc); }
+.visa a {
+  font-size: .62rem; letter-spacing: .12em; text-transform: uppercase; text-decoration: none;
+  color: var(--vc); border-bottom: 1px solid var(--vc); padding-bottom: 3px; transition: opacity .2s;
+}
+.visa a:hover { opacity: .7; }
+.pp-page + .pp-page { margin-top: 18px; }
+.pp-page + .pp-page { transition: opacity .6s ease .5s; }
+.passport:not(.open) .pp-page + .pp-page { opacity: 0; }
+.pp-id-top {
+  display: flex; justify-content: space-between; align-items: baseline; gap: 12px;
+  border-bottom: 1px solid rgba(62,26,42,.2); padding-bottom: 12px; margin-bottom: 20px;
+}
+.pp-id-top small, .pp-id small {
+  display: block; font-size: .5rem; letter-spacing: .24em; text-transform: uppercase; color: #8a7552;
+}
+.pp-id-top span { font-size: .6rem; letter-spacing: .22em; text-transform: uppercase; color: var(--rose); font-weight: 500; }
+.pp-id-body { display: grid; grid-template-columns: 170px 1fr; gap: 24px; align-items: stretch; }
+.pp-photo {
+  position: relative; min-height: 210px; overflow: hidden;
+  background: linear-gradient(160deg, #e9dcc0, #d6c39a);
+  border: 1px solid #b9a577; outline: 4px solid rgba(251,245,230,.9); outline-offset: -5px;
+  box-shadow: 0 6px 16px rgba(62,26,42,.18);
+}
+.pp-photo-fallback {
+  position: absolute; inset: 0; display: grid; place-items: center;
+  font: italic 400 5.5rem/1 "Cormorant Garamond", serif; color: rgba(125,56,80,.35);
+}
+.pp-photo img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; }
+.pp-id-name strong { display: block; font: 500 clamp(1.7rem, 4.6vw, 2.3rem)/1.1 "Cormorant Garamond", serif; color: var(--burgundy); margin-top: 2px; }
+.pp-fields { display: grid; grid-template-columns: 1fr 1fr; gap: 14px 16px; margin: 18px 0; }
+.pp-fields b { display: block; font-weight: 500; font-size: .85rem; color: var(--ink); margin-top: 2px; }
+.pp-lineage {
+  display: grid; grid-template-columns: 1fr 190px; gap: 22px; align-items: end;
+  margin-top: 20px; padding-top: 16px;
+  border-top: 1px dashed rgba(62,26,42,.3);
+}
+.pp-family { display: grid; grid-template-columns: 1fr; gap: 12px; margin: 0; padding: 0; border: 0; }
+.pp-lineage .pp-sign { border-top: 0; padding-top: 0; }
+.pp-family b { display: block; font-weight: 500; font-size: .8rem; line-height: 1.4; color: var(--ink); margin-top: 2px; }
+.pp-sign { border-top: 1px dashed rgba(62,26,42,.3); padding-top: 8px; }
+.pp-sign span { display: block; font: 400 1.9rem/1.2 "Parisienne", cursive; color: #2c3a78; transform: rotate(-3deg); transform-origin: left; }
+.pp-mrz {
+  margin-top: 20px; padding-top: 12px; border-top: 1px solid rgba(62,26,42,.2);
+  font: 500 .62rem/1.5 ui-monospace, Menlo, Consolas, monospace; letter-spacing: .08em;
+  color: #6b5a4a; opacity: .75; overflow: hidden; white-space: nowrap;
 }
 
 /* ─── GALLERY ────────────────────────────────────── */
@@ -1201,7 +1213,7 @@ audio { width: 100%; max-width: 430px; margin-top: 18px; }
   pointer-events: none;
 }
 .footer .monogram { height: 88px; width: 148px; filter: drop-shadow(0 0 16px rgba(201,167,103,.3)); }
-.footer h2 { font-size: 2.6rem; margin: 12px; }
+.footer h2 { font-size: clamp(2rem, 7vw, 3.4rem); margin: 18px 12px; }
 .footer p  { font-size: .62rem; letter-spacing: .2em; color: var(--gold); }
 .footer-verse {
   font: italic 1.3rem/1.7 "Cormorant Garamond", serif;
@@ -1221,14 +1233,6 @@ audio { width: 100%; max-width: 430px; margin-top: 18px; }
   0%   { opacity: 1; transform: translateY(0) rotate(0deg); }
   100% { opacity: 0; transform: translateY(100vh) rotate(720deg); }
 }
-
-/* ─── PARALLAX TILT on event cards ──────────────────── */
-.event {
-  transform-style: preserve-3d;
-  will-change: transform;
-}
-/* CSS variable tilt set by JS */
-.event[style] { transform: perspective(600px) rotateX(var(--rx,0deg)) rotateY(var(--ry,0deg)) translateY(-5px); }
 
 /* ─── PHOTO LIGHTBOX ─────────────────────────────────── */
 .lightbox-overlay {
@@ -1255,58 +1259,12 @@ audio { width: 100%; max-width: 430px; margin-top: 18px; }
 }
 .polaroid { cursor: zoom-in; }
 
-/* ─── FLOATING MUSIC NOTES ────────────────────────────── */
-.music-float-note {
-  position: absolute;
-  font-size: 1.2rem;
-  color: rgba(201,167,103,.55);
-  pointer-events: none;
-  animation: float-note-up 3.5s ease-in-out forwards;
-}
-@keyframes float-note-up {
-  0%   { opacity: 0; transform: translateY(0) scale(.7) rotate(-10deg); }
-  20%  { opacity: 1; }
-  100% { opacity: 0; transform: translateY(-120px) scale(1.1) rotate(15deg); }
-}
-
-/* ─── LOVE LETTER closing section ────────────────────── */
-.love-letter-section {
-  background: var(--wine);
-  text-align: center;
-  padding: 80px 22px;
-  position: relative;
-  overflow: hidden;
-}
-.love-letter-section::before {
-  content: "";
-  position: absolute; inset: clamp(14px,3vw,28px);
-  border: 1px solid rgba(201,167,103,.2);
-  pointer-events: none;
-}
-.love-letter-inner {
-  max-width: 580px;
-  margin: auto;
-  position: relative;
-  z-index: 1;
-}
-.love-letter-inner .ell-eyebrow {
-  font-size: .58rem;
-  letter-spacing: .3em;
-  text-transform: uppercase;
-  color: rgba(201,167,103,.6);
-  display: block;
-  margin-bottom: 22px;
-}
-.love-letter-inner h2 {
-  font: italic clamp(2rem,7vw,3.6rem)/1.1 "Cormorant Garamond", serif;
-  color: var(--cream);
-  margin: 0 0 22px;
-}
-.love-letter-inner p {
-  font: italic 1.2rem/1.75 "Cormorant Garamond", serif;
-  color: rgba(248,240,228,.7);
-  margin: 0 auto 28px;
-}
+/* ─── CLOSING extras ────────────────────────────── */
+.footer h2 { line-height: 1.1; }
+.footer h2 em { color: var(--gold-light); }
+.footer .pagebar { max-width: 760px; color: rgba(201,167,103,.7); border-color: rgba(201,167,103,.25); }
+.footer .pagebar b { color: var(--gold-light); }
+.footer-tag { margin: 22px 0 0; }
 .ell-signature {
   font: 2.6rem "Parisienne", cursive;
   color: var(--gold-light);
@@ -1378,6 +1336,141 @@ audio { width: 100%; max-width: 430px; margin-top: 18px; }
 }
 
 /* ════════════════════════════════════════════════════
+   PASSPORT THEME — every section is a page of the passport
+════════════════════════════════════════════════════ */
+
+/* paper pages: security-paper lines + page-edge frame */
+.story, .gallery, .blessings, .events {
+  position: relative;
+  background-color: #f6eedb;
+  background-image:
+    repeating-linear-gradient(135deg, rgba(201,167,103,.08) 0 1px, transparent 1px 7px),
+    radial-gradient(ellipse at 50% 0%, rgba(255,255,255,.6), transparent 70%);
+}
+.events { background-color: #e9dcc0; }
+.story::after, .gallery::after, .blessings::after, .events::after {
+  content: ""; position: absolute; inset: 14px;
+  border: 1px solid rgba(125,56,80,.13); pointer-events: none;
+}
+
+/* leather pages: grain + stitched frame */
+.scratch-section, .countdown, .footer {
+  background-image: radial-gradient(rgba(255,255,255,.04) 1px, transparent 1.3px);
+  background-size: 6px 6px;
+}
+.scratch-section::after, .countdown::after {
+  content: ""; position: absolute; inset: 14px;
+  border: 1px dashed rgba(201,167,103,.28); pointer-events: none;
+}
+.hero::before, .footer::before { border-style: dashed; }
+
+/* page header */
+.pagebar {
+  display: flex; justify-content: space-between; gap: 12px;
+  margin: 0 auto 38px; padding-bottom: 10px;
+  border-bottom: 1px solid rgba(62,26,42,.18);
+  font-size: .52rem; letter-spacing: .3em; text-transform: uppercase; color: #8a7552;
+}
+.pagebar b { font-weight: 500; color: var(--rose); }
+.scratch-section .pagebar, .countdown .pagebar {
+  color: rgba(201,167,103,.7); border-color: rgba(201,167,103,.25);
+}
+.scratch-section .pagebar b, .countdown .pagebar b { color: var(--gold-light); }
+
+/* rubber stamp */
+.rubber {
+  display: inline-block; padding: 7px 16px;
+  border: 2px solid var(--vc, #b3302b); outline: 1px solid var(--vc, #b3302b); outline-offset: 2px;
+  border-radius: 4px; color: var(--vc, #b3302b);
+  font: 600 .62rem/1.2 "DM Sans", sans-serif; letter-spacing: .22em; text-transform: uppercase;
+  transform: rotate(-6deg); mix-blend-mode: multiply; opacity: .85;
+}
+.rubber.on-dark { mix-blend-mode: normal; opacity: .9; }
+
+/* hero = passport cover */
+.hero-invocation {
+  position: absolute; z-index: 2;
+  top: 46px; left: 0; right: 0;
+  display: flex; flex-direction: column; align-items: center; gap: 6px;
+  opacity: 0; animation: nameReveal 1s cubic-bezier(.22,1,.36,1) .2s both;
+}
+.invocation-icon {
+  display: block; width: 54px; height: 54px; object-fit: contain;
+  filter: drop-shadow(0 0 10px rgba(201,167,103,.35));
+}
+.hero-invocation p {
+  margin: 0; color: var(--gold-light);
+  font: 500 .95rem/1.4 "Cormorant Garamond", serif; letter-spacing: .08em;
+}
+.hero-passport-top {
+  font-size: .58rem; letter-spacing: .42em; text-transform: uppercase;
+  color: var(--gold); margin-bottom: 18px;
+}
+.hero-mrz {
+  margin-top: 34px;
+  font: 500 .58rem/1.5 ui-monospace, Menlo, Consolas, monospace; letter-spacing: .1em;
+  color: rgba(201,167,103,.45); white-space: nowrap; overflow: hidden;
+}
+
+/* story = travel log (numbered stamps) */
+.timeline { counter-reset: stop; }
+.chapter { counter-increment: stop; }
+.chapter::before {
+  content: counter(stop, decimal-leading-zero);
+  left: 0; top: -3px; width: 28px; height: 28px;
+  display: grid; place-items: center;
+  border: 1px double var(--rose); border-radius: 50%;
+  color: var(--rose); background: #f6eedb;
+  font: 600 .55rem "DM Sans", sans-serif; letter-spacing: 0;
+  transform: rotate(-8deg);
+}
+.chapter:hover::before { transform: rotate(-8deg) scale(1.15); }
+
+/* gallery = travel photos with postmarks */
+.polaroid-stamp {
+  width: 34px; height: 34px; border-radius: 50%;
+  border: 1px double var(--rose); color: var(--rose);
+  background: rgba(255,255,255,.7); font-weight: 600; transform: rotate(-12deg);
+}
+
+/* countdown = departure board */
+.board-head {
+  display: flex; justify-content: center; flex-wrap: wrap; gap: 8px 26px;
+  margin: 30px 0 0;
+  font-size: .58rem; letter-spacing: .26em; text-transform: uppercase; color: var(--gold);
+}
+.board-head .ok { color: #6ee19a; }
+.counts { margin: 22px 0 30px; }
+.count {
+  padding: 16px clamp(12px, 3vw, 26px) 12px;
+  min-width: clamp(64px, 16vw, 110px);
+  background: linear-gradient(#1f1219 0 50%, #150a10 50% 100%);
+  border: 1px solid rgba(201,167,103,.3); border-radius: 8px;
+  box-shadow: 0 10px 24px rgba(0,0,0,.35);
+}
+.count::before {
+  content: ""; position: absolute; left: 0; right: 0; top: 50%; height: 1px;
+  background: rgba(0,0,0,.75); box-shadow: 0 1px 0 rgba(255,255,255,.06);
+}
+.count:not(:last-child)::after { display: none; }
+
+/* RSVP = arrival card */
+.wish-form {
+  position: relative; background: #fbf5e6;
+  border: 1px solid #d8c9a4; border-radius: 4px;
+  padding: 56px 24px 22px;
+  box-shadow: 0 24px 50px rgba(62,26,42,.14);
+}
+.wish-form::before {
+  content: "Arrival card · Republic of Love";
+  position: absolute; top: 0; left: 0; right: 0;
+  padding: 12px 16px; text-align: center;
+  background: var(--burgundy); color: var(--gold-light);
+  font-size: .55rem; letter-spacing: .3em; text-transform: uppercase;
+}
+.wish-card { background: #fbf5e6; border: 1px dashed rgba(125,56,80,.35); border-radius: 4px; }
+
+/* ════════════════════════════════════════════════════
    RESPONSIVE  —  3 breakpoints
 ════════════════════════════════════════════════════ */
 
@@ -1385,7 +1478,7 @@ audio { width: 100%; max-width: 430px; margin-top: 18px; }
 @media(max-width:900px) {
   .scratch-layout { grid-template-columns: 1fr; gap: 36px; }
   .scratch-description { text-align: center; }
-  .event-grid { gap: 12px; }
+  .pp-page { padding: 26px 20px 20px; }
 }
 
 /* ── ≤ 700px : large phone / small tablet ─────────── */
@@ -1423,9 +1516,8 @@ audio { width: 100%; max-width: 430px; margin-top: 18px; }
   .card-heart { font-size: .9rem; margin: 4px 0; }
 
   /* events */
-  .event-grid { grid-template-columns: 1fr; max-width: 400px; margin-inline: auto; }
-  .event p { min-height: auto; }
-  .event .day { font-size: 2.8rem; }
+  /* passport */
+  .passport { max-width: 420px; }
 
   /* gallery — single column, no stagger */
   .photo-grid {
@@ -1445,7 +1537,7 @@ audio { width: 100%; max-width: 430px; margin-top: 18px; }
 
   /* countdown */
   .counts { gap: 8px; margin: 32px 0; }
-  .count { padding: 0 8px; }
+  .count { padding: 12px 10px 8px; min-width: 0; }
   .count strong { font-size: clamp(2rem, 9vw, 2.8rem); }
   .count:not(:last-child)::after {
     right: -5px; top: 2px;
@@ -1463,13 +1555,13 @@ audio { width: 100%; max-width: 430px; margin-top: 18px; }
 
   /* footer */
   .footer { padding: 50px 16px; }
+  .footer h2 { font-size: 1.9rem; }
   .footer::before { inset: 12px; }
   .footer .monogram { height: 70px; width: 120px; }
   .footer h2 { font-size: 2rem; }
   .footer-verse { font-size: 1.1rem; }
 
   /* story quote */
-  .story-quote { font-size: 1.2rem; }
 }
 
 /* ── ≤ 480px : small phone ────────────────────────── */
@@ -1482,6 +1574,9 @@ audio { width: 100%; max-width: 430px; margin-top: 18px; }
   .hero::after  { inset: 18px; }
   .monogram { height: 90px; width: min(60vw, 200px); }
   .hero .subtitle { font-size: 1rem; }
+  .invocation-icon { width: 44px; height: 44px; }
+  .hero-invocation { top: 34px; }
+  .hero-invocation p { font-size: .85rem; }
 
   /* float nav — hide Story & Gallery on tiny screens */
   .float-nav { gap: 8px; padding: 7px 12px; }
@@ -1501,7 +1596,23 @@ audio { width: 100%; max-width: 430px; margin-top: 18px; }
   .scratch-hint { font-size: .55rem; }
 
   /* events */
-  .event { padding: 22px 14px; }
+  .visa { grid-template-columns: 92px 1fr; gap: 12px; padding: 14px 10px; }
+  .visa-stamp { width: 92px; }
+  .visa-stamp b { font-size: 1.35rem; }
+  .visa h3 { font-size: 1.45rem; }
+  .pp-page { padding: 22px 16px 18px; }
+  .pp-mrz { font-size: .5rem; }
+  .pp-id-body { grid-template-columns: 112px 1fr; gap: 14px; }
+  .pp-photo-fallback { font-size: 3.4rem; }
+  .pp-id-name strong { font-size: 1.45rem; }
+  .pp-fields { gap: 10px 10px; margin: 12px 0; }
+  .pp-fields b { font-size: .75rem; }
+  .pp-lineage { grid-template-columns: 1fr; gap: 12px; margin-top: 14px; padding-top: 12px; }
+  .pp-family { gap: 8px; }
+  .pp-family b { font-size: .74rem; }
+  .pp-sign span { font-size: 1.5rem; }
+  .dial-window { height: 50px; }
+  .dial-letter { font-size: 1.7rem; }
 
   /* countdown — hide colons, stack vertically */
   .counts { flex-wrap: wrap; gap: 6px 20px; }
@@ -1516,6 +1627,12 @@ audio { width: 100%; max-width: 430px; margin-top: 18px; }
 
   /* footer */
   .footer::before { inset: 8px; }
+
+  /* passport theme */
+  .pagebar { letter-spacing: .2em; margin-bottom: 28px; }
+  .hero-mrz { font-size: .48rem; }
+  .wish-form { padding: 52px 16px 18px; }
+  .board-head { letter-spacing: .16em; gap: 6px 16px; }
 }
 
 /* ── ≤ 360px : very small phone ──────────────────── */
@@ -1535,6 +1652,11 @@ audio { width: 100%; max-width: 430px; margin-top: 18px; }
 </head>
 
 <body>
+<audio id="bgMusic" src="assets/spriti-song.mp3" loop preload="auto"></audio>
+<button class="music-toggle" id="musicToggle" type="button" aria-label="Mute music" aria-pressed="false" hidden>
+  <svg class="mt-on" viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 9v6h4l5 4V5L8 9H4z"/><path d="M16.5 8.5a5 5 0 0 1 0 7M19 6a8.5 8.5 0 0 1 0 12"/></svg>
+  <svg class="mt-off" viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 9v6h4l5 4V5L8 9H4z"/><path d="M17 9l5 6M22 9l-5 6"/></svg>
+</button>
 
 <!-- ── ENVELOPE INTRO (click to open) ───────────────── -->
 <div class="envelope-wrap" id="envelopeWrap" role="dialog" aria-label="Open the invitation">
@@ -1567,32 +1689,34 @@ audio { width: 100%; max-width: 430px; margin-top: 18px; }
 
   <!-- eyebrow above envelope -->
   <div style="position:relative;z-index:1;font-size:clamp(.5rem,2vw,.62rem);letter-spacing:.28em;color:rgba(201,167,103,.6);text-transform:uppercase;margin-bottom:20px">
-    <span class="spriti-logo" style="font-size:clamp(.5rem,2vw,.62rem);letter-spacing:.2em"><span class="sl-char sl-s">S</span><span class="sl-char sl-p">P</span><span class="sl-char sl-mid">RITI</span></span> · A Wedding Invitation
+    <span class="spriti-logo" style="font-size:clamp(.5rem,2vw,.62rem);letter-spacing:.2em"><span class="sl-char sl-s">S</span><span class="sl-char sl-p">P</span><span class="sl-char sl-mid">RITI</span></span> · Your wedding passport
   </div>
 
   <div class="envelope" id="envelope">
     <!-- env-letter: hidden by opacity:0; rises on tap -->
     <div class="env-letter" id="envLetter">
-      <div style="font-size:.48rem;letter-spacing:.24em;color:var(--gold);text-transform:uppercase;margin-bottom:8px">The Wedding Invitation</div>
+      <div style="font-size:.48rem;letter-spacing:.24em;color:var(--gold);text-transform:uppercase;margin-bottom:8px">Entry permit</div>
       <div style="font:italic clamp(.9rem,3.2vw,1.15rem)/1.4 'Cormorant Garamond',serif;color:var(--ink)">Sparsh &amp; Prakriti</div>
       <div style="width:45%;height:1px;background:linear-gradient(90deg,transparent,#c9a767,transparent);margin:8px auto"></div>
-      <div style="font-size:clamp(.6rem,2vw,.75rem);color:#7a6040;letter-spacing:.08em">03 December 2026</div>
+      <div style="font-size:clamp(.6rem,2vw,.75rem);color:#7a6040;letter-spacing:.14em;text-transform:uppercase">Date · to be revealed</div>
     </div>
-    <!-- env-body: the gold rectangle -->
-    <div class="env-body"></div>
-    <!-- env-flap: direct child of .envelope -->
-    <div class="env-flap"></div>
-    <!-- env-seal: direct child of .envelope, above flap -->
+    <!-- env-body: the passport cover (swings open) -->
+    <div class="env-body">
+      <span class="eb-top">Republic of Love</span>
+      <span class="eb-title">Passport</span>
+      <span class="eb-logo">SPRITI</span>
+    </div>
+    <!-- env-seal: gold emblem on the cover -->
     <div class="env-seal" id="envSeal">♡</div>
   </div>
 
-  <div class="envelope-prompt">✦ Tap to open your invitation ✦</div>
+  <div class="envelope-prompt">✦ Tap to open your passport ✦</div>
 </div>
 
 <!-- ── FLOATING ANCHOR NAV ───────────────────────────── -->
 <nav class="float-nav" aria-label="Quick navigation">
-  <a href="#scratch">Scratch</a>
   <a href="#story" class="nav-story">Story</a>
+  <a href="#scratch">Scratch</a>
   <a href="#events">Events</a>
   <a href="#gallery" class="nav-gallery">Gallery</a>
   <a href="#rsvp">RSVP</a>
@@ -1624,7 +1748,13 @@ audio { width: 100%; max-width: 430px; margin-top: 18px; }
     </svg>
   </div>
 
+  <div class="hero-invocation">
+    <img class="invocation-icon" src="assets/ganesh.svg" alt="" aria-hidden="true">
+    <p>|| Shree Ganeshaya Namah ||</p>
+  </div>
+
   <div class="hero-content">
+    <div class="hero-passport-top">Republic of Love · Passport</div>
     <div class="eyebrow" style="color:var(--gold-light)">A little story, thirteen years in the making</div>
 
     <img class="monogram" src="assets/spriti-monogram.png" alt="Sparsh and Prakriti monogram">
@@ -1636,32 +1766,62 @@ audio { width: 100%; max-width: 430px; margin-top: 18px; }
     </h1>
 
     <div class="subtitle">Thirteen years in the making.<br>A lifetime still to write.</div>
-    <div class="date">THURSDAY · 03 DECEMBER 2026</div>
+    <div class="date">DATE OF TRAVEL · TO BE REVEALED</div>
 
     <a class="btn" href="#scratch">Open our invitation ↓</a>
     <div class="scroll-note">✦ A little surprise awaits below ✦</div>
+    <div class="hero-mrz" aria-hidden="true">
+      P&lt;IND&lt;SPRITI&lt;&lt;SPARSH&lt;AND&lt;PRAKRITI&lt;&lt;&lt;&lt;&lt;&lt;<br>
+      SP&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;FOREVER&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;
+    </div>
   </div>
 </header>
 
 <!-- ── ORNAMENT DIVIDER ───────────────────────────────── -->
 <div class="ornament-divider" aria-hidden="true">✦ &nbsp; ✦ &nbsp; ✦</div>
 
-<!-- ── INTRO ─────────────────────────────────────────────── -->
-<section class="section intro">
+<!-- ── STORY (intro + timeline) ───────────────────────── -->
+<section class="section story" id="story">
   <div class="inner">
-    <div class="eyebrow reveal">To our favourite people</div>
-    <h2 class="heading reveal reveal-delay-1">Some stories are<br><i>worth the wait.</i></h2>
-    <div class="gold-line reveal reveal-delay-2"></div>
-    <p class="reveal reveal-delay-2">What began in school slowly became a story of friendship, patience, family, and a love that kept choosing tomorrow.</p>
-    <p class="reveal reveal-delay-3" style="font-size:1.15rem">After thirteen years, we'd love for you to be part of our next chapter.</p>
-    <div class="signature reveal reveal-delay-3">
-      <span style="display:block;font-family:'DM Sans',sans-serif;font-size:.62rem;letter-spacing:.22em;text-transform:uppercase;color:var(--gold);margin-bottom:6px">With love</span>
-      Sparsh &amp; Prakriti
+    <div class="pagebar reveal"><span>Travel log</span><b>Page 01</b></div>
+    <div class="center">
+      <div class="eyebrow reveal">To our favourite people</div>
+      <h2 class="heading reveal reveal-delay-1">Some stories are<br><i>worth the wait.</i></h2>
+      <p class="story-lead reveal reveal-delay-2">What began in school slowly became a story of friendship, patience, family, and a love that kept choosing tomorrow.</p>
     </div>
-    <div class="reveal reveal-delay-4">
-      <span class="spriti-badge">
-        <span class="spriti-logo" style="font-size:.7rem"><span class="sl-char sl-s" style="color:var(--burgundy)">S</span><span class="sl-char sl-p" style="color:var(--rose)">P</span><span class="sl-char sl-mid" style="color:var(--ink);opacity:.7">RITI</span></span>
-      </span>
+
+    <div class="timeline" id="storyTimeline">
+      <article class="chapter">
+        <div class="label">Departure · School days</div>
+        <h3>Two classrooms. One beginning.</h3>
+        <p>He was in Class 9. She was in Class 8. Somewhere between ordinary school days, an extraordinary story began.</p>
+      </article>
+
+      <article class="chapter">
+        <div class="label">Layover · Their little secret</div>
+        <h3>A world only a few knew.</h3>
+        <p>As the years passed, something special grew. A few close friends knew the story long before it became everyone's happy news.</p>
+      </article>
+
+      <article class="chapter">
+        <div class="label">Customs · Family clearance</div>
+        <h3>Two families, one happiness.</h3>
+        <p>Eventually, both families found out. Their school-day story was becoming a future they could all celebrate.</p>
+      </article>
+
+      <article class="chapter">
+        <div class="label">Arrival · The next page</div>
+        <h3>And here we are.</h3>
+        <p>Thirteen years later, a new chapter begins. Same two hearts, a bigger circle of love, and a lifetime of memories still to make.</p>
+      </article>
+    </div>
+
+    <div class="story-close center reveal">
+      <div class="signature">
+        <span style="display:block;font-family:'DM Sans',sans-serif;font-size:.62rem;letter-spacing:.22em;text-transform:uppercase;color:var(--gold);margin-bottom:6px">With love</span>
+        Sparsh &amp; Prakriti
+      </div>
+      <div class="rubber" style="--vc:#2f6b3a;margin-top:18px">Approved by both families</div>
     </div>
   </div>
 </section>
@@ -1672,6 +1832,7 @@ audio { width: 100%; max-width: 430px; margin-top: 18px; }
 <!-- ── SCRATCH CARD ──────────────────────────────────── -->
 <section class="section scratch-section" id="scratch">
   <div class="inner">
+    <div class="pagebar reveal"><span>Date of travel</span><b>Page 02</b></div>
     <div class="center">
       <div class="eyebrow reveal">A surprise made just for you</div>
       <h2 class="heading reveal reveal-delay-1">Scratch to reveal<br><i>our forever</i></h2>
@@ -1682,7 +1843,7 @@ audio { width: 100%; max-width: 430px; margin-top: 18px; }
 
     <div class="scratch-layout">
       <div class="scratch-description reveal">
-        <div class="eyebrow">Your golden ticket</div>
+        <div class="eyebrow">Your entry permit</div>
         <h3>A date to remember.<br>A love to celebrate.</h3>
         <p>
           Some surprises are better when you discover them yourself.
@@ -1748,136 +1909,185 @@ audio { width: 100%; max-width: 430px; margin-top: 18px; }
   </div>
 </section>
 
-<!-- ── LOVE STORY TIMELINE ───────────────────────────── -->
-<section class="section story" id="story">
-  <div class="inner">
-    <div class="center">
-      <div class="eyebrow reveal">Four chapters. One love.</div>
-      <h2 class="heading reveal reveal-delay-1">Before the forever</h2>
-      <p class="reveal reveal-delay-2" style="max-width:540px;margin:20px auto;line-height:1.8;color:#715f65">
-        A little glimpse into a story thirteen years in the making.
-      </p>
-    </div>
-
-    <div class="timeline" id="storyTimeline">
-      <article class="chapter">
-        <div class="label">Chapter 01 · School days</div>
-        <h3>Two classrooms. One beginning.</h3>
-        <p>He was in Class 9. She was in Class 8. Somewhere between ordinary school days, an extraordinary story began.</p>
-      </article>
-
-      <article class="chapter">
-        <div class="label">Chapter 02 · Their little secret</div>
-        <h3>A world only a few knew.</h3>
-        <p>As the years passed, something special grew. A few close friends knew the story long before it became everyone's happy news.</p>
-      </article>
-
-      <article class="chapter">
-        <div class="label">Chapter 03 · Family</div>
-        <h3>Two families, one happiness.</h3>
-        <p>Eventually, both families found out. Their school-day story was becoming a future they could all celebrate.</p>
-      </article>
-
-      <article class="chapter">
-        <div class="label">Chapter 04 · The next page</div>
-        <h3>And here we are.</h3>
-        <p>Thirteen years later, a new chapter begins. Same two hearts, a bigger circle of love, and a lifetime of memories still to make.</p>
-      </article>
-    </div>
-
-    <div class="story-quote reveal">"The best love stories keep growing."</div>
-  </div>
-</section>
-
-<!-- ── MUSIC ──────────────────────────────────────────── -->
-<section class="section music">
-  <div class="inner center">
-    <div class="eyebrow reveal">Our story, in a song</div>
-    <h2 class="heading reveal reveal-delay-1">Press play on<br><span class="spriti-logo" style="font-style:italic"><span class="sl-char sl-s">S</span><span class="sl-char sl-p">P</span><span class="sl-char sl-mid">RITI</span></span></h2>
-
-    <div class="vinyl-wrap reveal reveal-delay-2" id="vinylWrap">
-      <div class="record">
-        <img src="assets/spriti-monogram.png" alt="">
-      </div>
-      <div class="vinyl-arm" aria-hidden="true">
-        <div class="vinyl-arm-inner">
-          <div class="vinyl-arm-head"></div>
-        </div>
-      </div>
-    </div>
-
-    <p class="reveal reveal-delay-2">
-      <span class="music-note">♪</span>
-      A song for a journey from school days to wedding days.
-      <span class="music-note" style="animation-delay:.3s">♫</span>
-    </p>
-
-    <audio id="weddingAudio" controls preload="none" class="reveal reveal-delay-3">
-      <source src="assets/spriti-song.mp3" type="audio/mpeg">
-      Your browser does not support audio.
-    </audio>
-
-    <p class="reveal reveal-delay-3" style="font-size:.7rem;margin-top:14px;color:#c0aeb0">Music begins when you press play.</p>
-  </div>
-</section>
-
 <!-- ── EVENTS ─────────────────────────────────────────── -->
 <section class="section events" id="events">
   <div class="inner">
+    <div class="pagebar reveal"><span>Visas</span><b>Page 03</b></div>
     <div class="center">
       <div class="eyebrow reveal">Please join us</div>
       <h2 class="heading reveal reveal-delay-1">The celebrations</h2>
       <p class="reveal reveal-delay-2" style="line-height:1.8">Three days, many traditions, and the people who make it all meaningful.</p>
     </div>
 
-    <div class="event-grid">
+    <div class="passport-stage" id="passportStage">
 
-      <!-- Engagement: navy + gold -->
-      <article class="event event-engagement reveal">
-        <span class="event-badge">Day 1</span>
-        <div class="day">30</div>
-        <div class="month">November · Monday</div>
-        <div class="event-icon-wrap">💍</div>
-        <h3>Engagement</h3>
-        <p>Moksha Resort<br>Moksha The Social Club</p>
-        <a href="https://share.google/01NmUCzae5xSmvnq4" target="_blank" rel="noopener">Find the venue ↗</a>
-      </article>
+      <!-- Step 1: combination lock — spell SPRITI -->
+      <div class="lock-wrap reveal reveal-delay-3" id="lockWrap">
+        <div class="lock" id="lock">
+          <div class="lock-shackle"></div>
+          <div class="lock-body">
+            <div class="lock-brand">Wedding passport · 6-letter lock</div>
+            <div class="dials" id="dials" role="group" aria-label="Combination lock"></div>
+          </div>
+        </div>
+        <p class="lock-hint" id="lockHint">Turn the dials to spell our name. <span>Hint: it's our hashtag.</span></p>
+        <button type="button" class="lock-skip" id="lockSkip">Stuck? Show me the way</button>
+      </div>
 
-      <!-- Haldi & Mehndi: turmeric yellow + green -->
-      <article class="event event-haldi reveal reveal-delay-1">
-        <span class="event-badge">Day 2</span>
-        <div class="day">01</div>
-        <div class="month">December · Tuesday</div>
-        <div class="event-icon-wrap">🌿</div>
-        <h3>Haldi &amp; Mehndi</h3>
-        <p>Groom's residence<br>Bareilly, Uttar Pradesh</p>
-        <a href="https://www.google.com/maps/search/?api=1&query=36%20Amarnath%20Dham%20Colony%2C%20Bareilly" target="_blank" rel="noopener">Find the venue ↗</a>
-      </article>
+      <!-- Step 2: the passport, with visa stamps for each celebration -->
+      <div class="passport" id="passport">
+        <div class="pp-cover" aria-hidden="true">
+          <div class="pp-cover-top">Republic of Love</div>
+          <div class="pp-cover-emblem">♡</div>
+          <div class="pp-cover-title">Passport</div>
+          <div class="pp-cover-logo">SPRITI</div>
+        </div>
 
-      <!-- Wedding: crimson red + rose -->
-      <article class="event event-wedding reveal reveal-delay-2">
-        <span class="event-badge">Day 3</span>
-        <div class="day">03</div>
-        <div class="month">December · Thursday</div>
-        <div class="event-icon-wrap">🌹</div>
-        <h3>The Wedding</h3>
-        <p>Ghudchadi · 5:00 PM<br>Lavanya Resorts<br>Wedding celebration</p>
-        <a href="https://share.google/iYtjKoRQDFhFn9UdN" target="_blank" rel="noopener">Find the venue ↗</a>
-      </article>
+        <!-- Holder 1 · Groom (replace assets/groom.jpg with the real photo) -->
+        <div class="pp-page pp-id">
+          <div class="pp-id-top">
+            <small>Republic of Love · Passport</small>
+            <span>Holder 01 · Groom</span>
+          </div>
+          <div class="pp-id-body">
+            <div class="pp-photo">
+              <span class="pp-photo-fallback" aria-hidden="true">S</span>
+              <img src="assets/groom.jpg" alt="Sparsh Agarwal, the groom" onerror="this.style.display='none'">
+            </div>
+            <div class="pp-id-info">
+              <div class="pp-id-name"><small>Name</small><strong>Sparsh Agarwal</strong></div>
+              <div class="pp-fields">
+                <div><small>Role</small><b>Groom</b></div>
+                <div><small>Passport no.</small><b>SP-0312-G</b></div>
+                <div><small>Batch</small><b>Class 9 · School days</b></div>
+                <div><small>Nationality</small><b>Hopelessly in love</b></div>
+              </div>
+            </div>
+          </div>
+          <div class="pp-lineage">
+          <div class="pp-family">
+            <div><small>Grandson of</small><b>Late Mrs. Saroj Agarwal &amp; Late Mr. Ram Raghuveer Agarwal</b></div>
+            <div><small>Son of</small><b>Mrs. Monika Agarwal &amp; Mr. Sudhanshu Kumar Agarwal</b></div>
+          </div>
+          <div class="pp-sign"><small>Holder's signature</small><span>Sparsh</span></div>
+          </div>
+          <div class="pp-mrz" aria-hidden="true">
+            P&lt;INDAGARWAL&lt;&lt;SPARSH&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;<br>
+            SP0312G&lt;&lt;FOREVER&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;
+          </div>
+        </div>
+
+        <!-- Holder 2 · Bride (replace assets/bride.jpg with the real photo) -->
+        <div class="pp-page pp-id">
+          <div class="pp-id-top">
+            <small>Republic of Love · Passport</small>
+            <span>Holder 02 · Bride</span>
+          </div>
+          <div class="pp-id-body">
+            <div class="pp-photo">
+              <span class="pp-photo-fallback" aria-hidden="true">P</span>
+              <img src="assets/bride.jpg" alt="Prakriti Mandwal, the bride" onerror="this.style.display='none'">
+            </div>
+            <div class="pp-id-info">
+              <div class="pp-id-name"><small>Name</small><strong>Prakriti Mandwal</strong></div>
+              <div class="pp-fields">
+                <div><small>Role</small><b>Bride</b></div>
+                <div><small>Passport no.</small><b>SP-0312-B</b></div>
+                <div><small>Batch</small><b>Class 8 · School days</b></div>
+                <div><small>Nationality</small><b>Hopelessly in love</b></div>
+              </div>
+            </div>
+          </div>
+          <div class="pp-lineage">
+          <div class="pp-family">
+            <div><small>Granddaughter of</small><b>Late Mrs. Pushpa Mandwal &amp; Late Mr. R.P. Mandwal</b></div>
+            <div><small>Daughter of</small><b>Mrs. Anamika Mandwal &amp; Late Mr. Rajeev Mandwal</b></div>
+          </div>
+          <div class="pp-sign"><small>Holder's signature</small><span>Prakriti</span></div>
+          </div>
+          <div class="pp-mrz" aria-hidden="true">
+            P&lt;INDMANDWAL&lt;&lt;PRAKRITI&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;<br>
+            SP0312B&lt;&lt;FOREVER&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;
+          </div>
+        </div>
+
+        <!-- Visas page -->
+        <div class="pp-page">
+          <div class="pp-head">
+            <div>
+              <small>Republic of Love · Visas</small>
+              <strong>Entry stamps</strong>
+            </div>
+            <div class="pp-code"><small>Type</small><strong>P</strong></div>
+          </div>
+
+          <div class="pp-meta">
+            <div><small>Holders</small><b>Sparsh &amp; Prakriti</b></div>
+            <div><small>Journey so far</small><b>13 years</b></div>
+            <div><small>Destination</small><b>Bareilly, Uttar Pradesh</b></div>
+            <div><small>Valid until</small><b>Forever</b></div>
+          </div>
+
+          <!-- Engagement -->
+          <article class="visa visa-engagement" style="--vc:#24306b;--rot:-5deg">
+            <div class="visa-stamp" aria-hidden="true">
+              <small>Day 1</small><b>30 NOV</b><span>ADMITTED</span>
+            </div>
+            <div class="visa-body">
+              <div class="visa-type">Visa · Day 1 · Monday</div>
+              <h3>Engagement</h3>
+              <ul class="visa-times"><li><b>5:00 PM</b> Engagement ceremony</li></ul>
+              <p>Moksha Resort<br>Moksha The Social Club</p>
+              <a href="https://share.google/01NmUCzae5xSmvnq4" target="_blank" rel="noopener">Find the venue ↗</a>
+            </div>
+          </article>
+
+          <!-- Haldi & Mehndi -->
+          <article class="visa visa-haldi" style="--vc:#5c7a1a;--rot:6deg">
+            <div class="visa-stamp" aria-hidden="true">
+              <small>Day 2</small><b>01 DEC</b><span>ADMITTED</span>
+            </div>
+            <div class="visa-body">
+              <div class="visa-type">Visa · Day 2 · Tuesday</div>
+              <h3>Haldi &amp; Mehndi</h3>
+              <ul class="visa-times"><li><b>10:00 AM</b> Haldi</li><li><b>4:00 PM</b> Mehndi</li></ul>
+              <p>Groom's residence<br>Bareilly, Uttar Pradesh</p>
+              <a href="https://maps.app.goo.gl/ascMY1GnDcCmKuVi7" target="_blank" rel="noopener">Find the venue ↗</a>
+            </div>
+          </article>
+
+          <!-- Wedding -->
+          <article class="visa visa-wedding" style="--vc:#b3302b;--rot:-8deg">
+            <div class="visa-stamp" aria-hidden="true">
+              <small>Day 3</small><b>03 DEC</b><span>ADMITTED</span>
+            </div>
+            <div class="visa-body">
+              <div class="visa-type">Visa · Day 3 · Thursday</div>
+              <h3>The Wedding</h3>
+              <ul class="visa-times"><li><b>5:00 PM</b> Ghudchadi</li><li><b>7:00 PM</b> Wedding ceremony</li><li><b>8:30 PM</b> Dinner onwards</li></ul>
+              <p>Lavanya Resorts, Bareilly</p>
+              <a href="https://share.google/iYtjKoRQDFhFn9UdN" target="_blank" rel="noopener">Find the venue ↗</a>
+            </div>
+          </article>
+
+          <div class="pp-mrz" aria-hidden="true">
+            P&lt;IND&lt;SPRITI&lt;&lt;SPARSH&lt;AND&lt;PRAKRITI&lt;&lt;&lt;&lt;&lt;&lt;<br>
+            SP03122026&lt;&lt;FOREVER&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;
+          </div>
+        </div>
+      </div>
 
     </div>
 
-    <p class="center reveal" style="font-size:.68rem;margin-top:26px;color:#9e8a6a">
-      Please verify the venue links and final timings before sharing.
-    </p>
   </div>
 </section>
 
 <!-- ── GALLERY ────────────────────────────────────────── -->
 <section class="section gallery" id="gallery">
   <div class="inner">
+    <div class="pagebar reveal"><span>Memories</span><b>Page 04</b></div>
     <div class="center">
-      <div class="eyebrow reveal">A few pages from our album</div>
+      <div class="eyebrow reveal">Pages from our travel album</div>
       <h2 class="heading reveal reveal-delay-1">Snapshots of forever</h2>
       <p class="reveal reveal-delay-2">Replace these frames with their real photographs.</p>
     </div>
@@ -1916,9 +2126,10 @@ audio { width: 100%; max-width: 430px; margin-top: 18px; }
 <!-- ── COUNTDOWN ─────────────────────────────────────── -->
 <section class="section countdown">
   <div class="inner center">
-    <div class="eyebrow reveal">The date is getting closer</div>
+    <div class="pagebar reveal"><span>Departures</span><b>Page 05</b></div>
+    <div class="eyebrow reveal">Departure board</div>
     <h2 class="heading reveal reveal-delay-1">Until <span class="spriti-logo" style="font-style:italic"><span class="sl-char sl-s">S</span><span class="sl-char sl-p">P</span><span class="sl-char sl-mid">RITI</span></span></h2>
-    <span class="heart-divider reveal reveal-delay-2">♥</span>
+    <div class="board-head reveal reveal-delay-2"><span>Flight SP 0312</span><span>To: Bareilly</span><span class="ok">Status: on time ♥</span></div>
 
     <div class="counts reveal reveal-delay-2">
       <div class="count"><strong id="days">--</strong><span>Days</span></div>
@@ -1936,6 +2147,7 @@ audio { width: 100%; max-width: 430px; margin-top: 18px; }
 <!-- ── BLESSINGS ──────────────────────────────────────── -->
 <section class="section blessings" id="rsvp">
   <div class="inner center">
+    <div class="pagebar reveal"><span>Arrivals</span><b>Page 06</b></div>
 
     <div class="eyebrow reveal">You are invited</div>
     <h2 class="heading reveal reveal-delay-1">Join us &amp; celebrate</h2>
@@ -1973,10 +2185,10 @@ audio { width: 100%; max-width: 430px; margin-top: 18px; }
     <!-- Blessings / wish form -->
     <div class="eyebrow reveal reveal-delay-3" style="margin-bottom:10px">Leave a wish for the couple</div>
     <form class="wish-form reveal reveal-delay-3" id="wishForm">
-      <label for="wishName">Your name</label>
+      <label for="wishName">Name of traveller</label>
       <div class="field-wrap"><input id="wishName" name="wishName" required placeholder="Your name"></div>
 
-      <label for="wishMsg">Your blessing or message</label>
+      <label for="wishMsg">Message for the couple</label>
       <div class="field-wrap"><textarea id="wishMsg" name="wishMsg" rows="3" required placeholder="Write something beautiful for Sparsh & Prakriti…"></textarea></div>
 
       <button class="btn" type="submit">Send your blessings ♡</button>
@@ -1992,32 +2204,23 @@ audio { width: 100%; max-width: 430px; margin-top: 18px; }
   </div>
 </section>
 
-<!-- ── LOVE LETTER CLOSING ────────────────────────────── -->
-<section class="love-letter-section reveal" id="loveletter">
-  <div class="love-letter-inner">
-    <span class="ell-eyebrow">With all our love</span>
-    <h2>We can't wait to<br><em>see you there.</em></h2>
-    <p>
-      This invitation comes straight from our hearts.<br>
-      Thank you for being part of our story — and our forever.
-    </p>
-    <div class="gold-line" style="background:linear-gradient(90deg,transparent,rgba(201,167,103,.5),transparent)"></div>
-    <span class="ell-signature">Sparsh &amp; Prakriti</span>
-    <div style="margin-top:22px;font-size:.6rem;letter-spacing:.3em;color:rgba(201,167,103,.4);text-transform:uppercase"><span class="spriti-logo" style="font-size:.6rem;letter-spacing:.2em"><span class="sl-char sl-s">S</span><span class="sl-char sl-p">P</span><span class="sl-char sl-mid">RITI</span></span> · 03 December 2026 · Bareilly</div>
-  </div>
-</section>
-
-<!-- ── FOOTER ─────────────────────────────────────────── -->
-<footer class="footer">
+<!-- ── CLOSING (love letter + footer, merged) ──────────── -->
+<footer class="footer" id="loveletter">
+  <div class="pagebar"><span>Observations</span><b>Page 07</b></div>
   <img class="monogram" src="assets/spriti-monogram.png" alt="S P monogram">
-  <h2>Sparsh <span style="color:var(--gold)">&amp;</span> Prakriti</h2>
-  <p>13 YEARS IN THE MAKING · FOREVER TO GO</p>
-  <div class="gold-line"></div>
+  <h2>We can't wait to<br><em>see you there.</em></h2>
   <div class="footer-verse">
-    Our story brought us here.<br>
-    We'd love for you to be part of our forever.
+    This invitation comes straight from our hearts.<br>
+    Thank you for being part of our story — and our forever.
   </div>
-  <p style="margin-top:28px"><span class="spriti-logo" style="font-size:1rem"><span class="sl-char sl-s">S</span><span class="sl-char sl-p">P</span><span class="sl-char sl-mid">RITI</span></span></p>
+  <div class="gold-line"></div>
+  <div class="ell-signature">Sparsh &amp; Prakriti</div>
+  <div class="rubber on-dark" style="--vc:#c9a767;margin-top:22px">Valid until forever</div>
+  <p class="footer-tag"><span class="spriti-logo" style="font-size:.9rem"><span class="sl-char sl-s">S</span><span class="sl-char sl-p">P</span><span class="sl-char sl-mid">RITI</span></span> · 03 December 2026 · Bareilly</p>
+  <div class="hero-mrz" aria-hidden="true">
+    P&lt;IND&lt;SPRITI&lt;&lt;SPARSH&lt;AND&lt;PRAKRITI&lt;&lt;&lt;&lt;&lt;&lt;<br>
+    SP03122026&lt;&lt;FOREVER&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;
+  </div>
 </footer>
 
 <script>
@@ -2051,6 +2254,46 @@ const envLetter    = document.getElementById("envLetter");
   setInterval(spawn, 900);
 })();
 
+/* ── Background music: loops for the whole invitation, fades in, mute toggle ── */
+const bgMusic   = document.getElementById("bgMusic");
+const musicBtn  = document.getElementById("musicToggle");
+const MUSIC_VOL = 0.45;
+let musicFade   = null;
+
+function fadeMusicTo(target, ms) {
+  clearInterval(musicFade);
+  const from = bgMusic.volume, steps = 20, dt = ms / steps;
+  let i = 0;
+  musicFade = setInterval(() => {
+    i++;
+    bgMusic.volume = Math.min(1, Math.max(0, from + (target - from) * (i / steps)));
+    if (i >= steps) clearInterval(musicFade);
+  }, dt);
+}
+function startMusic() {
+  if (!bgMusic) return;
+  bgMusic.volume = 0;
+  bgMusic.play().then(() => {
+    musicBtn.hidden = false;
+    musicBtn.classList.add("playing");
+    fadeMusicTo(MUSIC_VOL, 2500);
+  }).catch(() => { musicBtn.hidden = false; musicBtn.classList.add("muted"); musicBtn.setAttribute("aria-pressed", "true"); });
+}
+if (musicBtn && bgMusic) {
+  musicBtn.addEventListener("click", () => {
+    if (bgMusic.paused) {                       // autoplay was blocked, or user resumes
+      bgMusic.play(); musicBtn.classList.remove("muted"); fadeMusicTo(MUSIC_VOL, 600);
+      musicBtn.setAttribute("aria-pressed", "false"); musicBtn.setAttribute("aria-label", "Mute music");
+      return;
+    }
+    const mute = !musicBtn.classList.contains("muted");
+    musicBtn.classList.toggle("muted", mute);
+    musicBtn.setAttribute("aria-pressed", String(mute));
+    musicBtn.setAttribute("aria-label", mute ? "Play music" : "Mute music");
+    fadeMusicTo(mute ? 0 : MUSIC_VOL, 400);
+  });
+}
+
 /* ── Letter is hidden via opacity:0 in CSS — no layout dependency needed ── */
 if (envelopeWrap) {
   envelopeWrap.addEventListener("click", () => {
@@ -2079,6 +2322,9 @@ if (envelopeWrap) {
 
     /* t=1900ms: overlay fades out */
     setTimeout(() => envelopeWrap.classList.add("opened"), 1900);
+
+    /* background music — starts on this tap (the user gesture browsers require) */
+    startMusic();
   });
 }
 
@@ -2178,22 +2424,6 @@ if (timelineEl) {
     }
   }, { threshold: 0.1 });
   tlObs.observe(timelineEl);
-}
-
-/* ══════════════════════════════════════════════════════
-   6. VINYL RECORD — spin while audio plays
-══════════════════════════════════════════════════════ */
-const vinylWrap  = document.getElementById("vinylWrap");
-const audioEl    = document.getElementById("weddingAudio");
-
-if (audioEl && vinylWrap) {
-  audioEl.addEventListener("play",  () => vinylWrap.classList.add("spinning"));
-  audioEl.addEventListener("pause", () => vinylWrap.classList.remove("spinning"));
-  audioEl.addEventListener("ended", () => vinylWrap.classList.remove("spinning"));
-  vinylWrap.addEventListener("click", () => {
-    if (audioEl.paused) { audioEl.play(); }
-    else { audioEl.pause(); }
-  });
 }
 
 /* ══════════════════════════════════════════════════════
@@ -2570,25 +2800,127 @@ if (wishForm) {
 }
 
 /* ══════════════════════════════════════════════════════
-   10. EVENT CARD — 3-D PARALLAX TILT
+   10. COMBINATION LOCK → PASSPORT → VISA STAMPS
 ══════════════════════════════════════════════════════ */
-document.querySelectorAll(".event").forEach(card => {
-  card.addEventListener("mousemove", e => {
-    if (window.innerWidth < 700) return; // skip on mobile
-    const rect = card.getBoundingClientRect();
-    const x = (e.clientX - rect.left) / rect.width  - 0.5;  // -0.5 … +0.5
-    const y = (e.clientY - rect.top)  / rect.height - 0.5;
-    card.style.setProperty("--rx", `${(-y * 12).toFixed(1)}deg`);
-    card.style.setProperty("--ry", `${( x * 12).toFixed(1)}deg`);
-    card.style.transform =
-      `perspective(600px) rotateX(${(-y*12).toFixed(1)}deg) rotateY(${(x*12).toFixed(1)}deg) translateY(-5px)`;
+(function () {
+  const CODE      = "SPRITI";
+  const stage     = document.getElementById("passportStage");
+  if (!stage) return;
+
+  const lockWrap  = document.getElementById("lockWrap");
+  const lockEl    = document.getElementById("lock");
+  const dialsEl   = document.getElementById("dials");
+  const hintEl    = document.getElementById("lockHint");
+  const skipBtn   = document.getElementById("lockSkip");
+  const passport  = document.getElementById("passport");
+  const A         = 65;
+  const dials     = [];
+  let unlocked    = false;
+
+  const letterAt = n => String.fromCharCode(A + ((n % 26) + 26) % 26);
+
+  function render(d, dir) {
+    d.letterEl.textContent = letterAt(d.value);
+    d.letterEl.classList.remove("tick-up", "tick-down");
+    if (dir) {
+      void d.letterEl.offsetWidth;               // restart the animation
+      d.letterEl.classList.add(dir > 0 ? "tick-up" : "tick-down");
+    }
+    d.el.classList.toggle("ok", letterAt(d.value) === d.target);
+  }
+
+  function turn(d, step) {
+    if (unlocked) return;
+    d.value = (d.value + step + 26) % 26;
+    render(d, step);
+    check();
+  }
+
+  CODE.split("").forEach(ch => {
+    const target = ch;
+    const t      = ch.charCodeAt(0) - A;
+    // start every dial 1–4 clicks away from the right letter
+    const off    = (1 + Math.floor(Math.random() * 4)) * (Math.random() < 0.5 ? -1 : 1);
+
+    const el = document.createElement("div");
+    el.className = "dial";
+    el.innerHTML =
+      '<button type="button" class="dial-btn" aria-label="Previous letter">▲</button>' +
+      '<div class="dial-window" tabindex="0" role="spinbutton" aria-label="Letter" aria-valuetext="">' +
+        '<span class="dial-letter"></span></div>' +
+      '<button type="button" class="dial-btn" aria-label="Next letter">▼</button>' +
+      '<i class="dial-led" aria-hidden="true"></i>';
+    dialsEl.appendChild(el);
+
+    const d = {
+      el, target,
+      value: (t + off + 26) % 26,
+      letterEl: el.querySelector(".dial-letter")
+    };
+    const [upBtn, downBtn] = el.querySelectorAll(".dial-btn");
+    const win = el.querySelector(".dial-window");
+
+    upBtn.addEventListener("click",   () => turn(d, -1));
+    downBtn.addEventListener("click", () => turn(d, +1));
+    win.addEventListener("click",     () => turn(d, +1));
+    win.addEventListener("keydown", e => {
+      if (e.key === "ArrowUp")        { e.preventDefault(); turn(d, -1); }
+      else if (e.key === "ArrowDown") { e.preventDefault(); turn(d, +1); }
+    });
+
+    dials.push(d);
+    render(d, 0);
   });
-  card.addEventListener("mouseleave", () => {
-    card.style.transform = "";
-    card.style.removeProperty("--rx");
-    card.style.removeProperty("--ry");
+
+  function check() {
+    const right = dials.filter(d => letterAt(d.value) === d.target).length;
+    dials.forEach(d => d.el.querySelector(".dial-window")
+      .setAttribute("aria-valuetext", letterAt(d.value)));
+    if (right === dials.length) unlock();
+    else hintEl.firstChild.textContent = right
+      ? right + " of " + dials.length + " letters right… "
+      : "Turn the dials to spell our name. ";
+  }
+
+  function unlock() {
+    if (unlocked) return;
+    unlocked = true;
+    lockEl.classList.add("open");
+    dialsEl.querySelectorAll("button").forEach(b => (b.disabled = true));
+    skipBtn.hidden = true;
+    hintEl.innerHTML = "Unlocked — welcome aboard ✦";
+
+    setTimeout(() => lockWrap.classList.add("done"), 1100);
+    setTimeout(() => {
+      lockWrap.style.display = "none";
+      passport.classList.add("show");
+      setTimeout(() => passport.classList.add("open"), 150);
+      setTimeout(armStamps, 1200);
+    }, 1700);
+  }
+
+  function armStamps() {
+    const visas = passport.querySelectorAll(".visa");
+    const obs = new IntersectionObserver(entries => {
+      entries.forEach(en => {
+        if (!en.isIntersecting) return;
+        const v = en.target;
+        const i = [...visas].indexOf(v);
+        setTimeout(() => v.classList.add("stamped"), 250 + i * 350);
+        obs.unobserve(v);
+      });
+    }, { threshold: 0.45 });
+    visas.forEach(v => obs.observe(v));
+  }
+
+  skipBtn.addEventListener("click", () => {
+    dials.forEach((d, i) => {
+      d.value = d.target.charCodeAt(0) - A;
+      render(d, 1);
+    });
+    check();
   });
-});
+})();
 
 /* ══════════════════════════════════════════════════════
    11. PHOTO LIGHTBOX
@@ -2624,37 +2956,6 @@ document.querySelectorAll(".event").forEach(card => {
   overlay.addEventListener("click", e => { if (e.target === overlay || e.target === lbImg) close(); });
   closeBtn.addEventListener("click", close);
   document.addEventListener("keydown", e => { if (e.key === "Escape") close(); });
-})();
-
-/* ══════════════════════════════════════════════════════
-   12. FLOATING MUSIC NOTES while audio plays
-══════════════════════════════════════════════════════ */
-(function() {
-  const audioEl2  = document.getElementById("weddingAudio");
-  const musicSec  = document.querySelector(".music");
-  if (!audioEl2 || !musicSec) return;
-
-  const notes = ["♩","♪","♫","♬","𝄞"];
-  let noteTimer = null;
-
-  function spawnNote() {
-    const n = document.createElement("span");
-    n.className = "music-float-note";
-    n.textContent = notes[Math.floor(Math.random() * notes.length)];
-    n.style.left = (20 + Math.random() * 60) + "%";
-    n.style.bottom = (30 + Math.random() * 30) + "%";
-    n.style.animationDuration = (2.5 + Math.random() * 2) + "s";
-    musicSec.style.position = "relative";
-    musicSec.appendChild(n);
-    setTimeout(() => n.remove(), 5000);
-  }
-
-  audioEl2.addEventListener("play",  () => {
-    clearInterval(noteTimer);
-    noteTimer = setInterval(spawnNote, 600);
-  });
-  audioEl2.addEventListener("pause", () => clearInterval(noteTimer));
-  audioEl2.addEventListener("ended", () => clearInterval(noteTimer));
 })();
 
 /* ══════════════════════════════════════════════════════
