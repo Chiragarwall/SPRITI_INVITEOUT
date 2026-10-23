@@ -2293,6 +2293,20 @@ if (musicBtn && bgMusic) {
     fadeMusicTo(mute ? 0 : MUSIC_VOL, 400);
   });
 }
+/* Pause when the tab/app goes to the background; resume only if it was playing */
+let musicWasPlaying = false;
+function pauseMusicForBackground() {
+  if (!bgMusic) return;
+  if (!bgMusic.paused) { musicWasPlaying = true; clearInterval(musicFade); bgMusic.pause(); }
+}
+document.addEventListener("visibilitychange", () => {
+  if (!bgMusic) return;
+  if (document.hidden) pauseMusicForBackground();
+  else if (musicWasPlaying) { musicWasPlaying = false; bgMusic.play().catch(() => {}); }
+});
+window.addEventListener("pagehide", pauseMusicForBackground);
+
+
 
 /* ── Letter is hidden via opacity:0 in CSS — no layout dependency needed ── */
 if (envelopeWrap) {
