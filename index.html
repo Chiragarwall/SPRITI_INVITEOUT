@@ -239,6 +239,9 @@ a { color: inherit; }
   margin: 0 auto;
   max-width: 460px;
 }
+.hero-hashtag { margin: 22px 0 0; }
+.hero-hashtag .spriti-logo { font-size: clamp(2.1rem, 9vw, 3rem); letter-spacing: .06em; text-shadow: 0 0 24px rgba(201,167,103,.35); }
+.hero-hashtag::after { content: "our hashtag"; display: block; margin-top: 8px; font-size: .5rem; letter-spacing: .34em; text-transform: uppercase; color: rgba(234,215,170,.55); }
 .hero .date {
   margin: 26px 0;
   font-size: .68rem;
@@ -756,6 +759,11 @@ a { color: inherit; }
 .made-by .mb-who small { display: block; font-family: "DM Sans", sans-serif; font-size: .46rem; letter-spacing: .26em; text-transform: uppercase; color: rgba(234,215,170,.5); margin-bottom: 3px; }
 .made-by .mb-amp { font-family: "Cormorant Garamond", serif; font-style: italic; color: var(--gold); font-size: 1rem; opacity: .8; }
 .made-by .mb-sub { margin-top: 10px; font-size: .5rem; letter-spacing: .22em; text-transform: uppercase; color: rgba(234,215,170,.4); }
+.story-hashtag { margin: 14px 0 0; font-size: .9rem; color: #8a7552; letter-spacing: .04em; }
+.story-hashtag .spriti-logo { font-size: 1.5rem; margin-left: 4px; vertical-align: -3px; }
+.story-hashtag .spriti-logo .sl-s   { color: #b08a45; }
+.story-hashtag .spriti-logo .sl-p   { color: #8a6a2e; }
+.story-hashtag .spriti-logo .sl-mid { color: var(--wine); opacity: 1; }
 /* ─── #SPRITI ANIMATED LOGO ──────────────────────── */
 .spriti-logo {
   display: inline-flex;
@@ -1781,6 +1789,7 @@ a { color: inherit; }
     </h1>
 
     <div class="subtitle">Thirteen years in the making.<br>A lifetime still to write.</div>
+    <div class="hero-hashtag" aria-label="Our hashtag: SPRITI"><span class="spriti-logo"><span class="sl-char sl-s">#</span><span class="sl-char sl-s">S</span><span class="sl-char sl-p">P</span><span class="sl-char sl-mid">RITI</span></span></div>
     <div class="date">DATE OF TRAVEL · TO BE REVEALED</div>
 
     <a class="btn" href="#scratch">Open our invitation ↓</a>
@@ -1803,6 +1812,7 @@ a { color: inherit; }
       <div class="eyebrow reveal">To our favourite people</div>
       <h2 class="heading reveal reveal-delay-1">Some stories are<br><i>worth the wait.</i></h2>
       <p class="story-lead reveal reveal-delay-2">What began in school slowly became a story of friendship, patience, family, and a love that kept choosing tomorrow.</p>
+      <p class="story-hashtag reveal reveal-delay-3">Our story even has a hashtag: <span class="spriti-logo"><span class="sl-char sl-s">#</span><span class="sl-char sl-s">S</span><span class="sl-char sl-p">P</span><span class="sl-char sl-mid">RITI</span></span></p>
     </div>
 
     <div class="timeline" id="storyTimeline">
@@ -1945,7 +1955,7 @@ a { color: inherit; }
             <div class="dials" id="dials" role="group" aria-label="Combination lock"></div>
           </div>
         </div>
-        <p class="lock-hint" id="lockHint">Turn the dials to spell our name. <span>Hint: it's our hashtag.</span></p>
+        <p class="lock-hint" id="lockHint">Turn the dials to spell our name. <span>Hint: the hashtag you saw on the first page.</span></p>
         <button type="button" class="lock-skip" id="lockSkip">Stuck? Show me the way</button>
       </div>
 
