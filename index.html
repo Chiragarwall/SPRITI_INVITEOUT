@@ -2,15 +2,13 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <meta name="theme-color" content="#1a0b14">
 <title>SPRITI | Sparsh & Prakriti</title>
 <script>
-/* Always begin at the passport cover: no scroll restore, no #hash jump, no bfcache resume */
+/* Resume where the guest left off on refresh (state kept in sessionStorage, restored by the main script) */
 if ("scrollRestoration" in history) history.scrollRestoration = "manual";
 if (location.hash) history.replaceState(null, "", location.pathname + location.search);
-window.scrollTo(0, 0);
-window.addEventListener("pageshow", function (e) { if (e.persisted) location.reload(); });
 </script>
 
 <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -31,7 +29,7 @@ window.addEventListener("pageshow", function (e) { if (e.persisted) location.rel
 }
 
 *, *::before, *::after { box-sizing: border-box; }
-html { scroll-behavior: smooth; }
+html { scroll-behavior: smooth; -webkit-text-size-adjust: 100%; text-size-adjust: 100%; }
 body {
   margin: 0;
   background: var(--cream);
@@ -39,6 +37,13 @@ body {
   font-family: "DM Sans", sans-serif;
   font-weight: 300;
   overflow-x: hidden;
+  overflow-x: clip;
+  -webkit-font-smoothing: antialiased;
+}
+/* iOS Safari: no auto-zoom on focus (needs >=16px), no native input chrome */
+input, textarea, select {
+  -webkit-appearance: none; appearance: none; border-radius: 0;
+  font-size: 16px !important;
 }
 h1,h2,h3 { font-family: "Cormorant Garamond", serif; font-weight: 400; }
 button, a { -webkit-tap-highlight-color: transparent; }
@@ -109,11 +114,12 @@ a { color: inherit; }
 /* ─── FLOATING NAV ───────────────────────────────── */
 .float-nav {
   position: fixed;
-  bottom: 22px;
+  bottom: calc(22px + env(safe-area-inset-bottom, 0px));
   left: 50%;
   transform: translateX(-50%);
   z-index: 999;
   background: rgba(26, 11, 20, .88);
+  -webkit-backdrop-filter: blur(12px);
   backdrop-filter: blur(12px);
   border: 1px solid #c9a76740;
   padding: 10px 22px;
@@ -133,6 +139,7 @@ a { color: inherit; }
 
 /* ─── HERO ───────────────────────────────────────── */
 .hero {
+  min-height: 100vh;
   min-height: 100svh;
   padding: 140px 24px 50px;
   display: grid;
@@ -296,11 +303,11 @@ a { color: inherit; }
   pointer-events: none;
 }
 .music-toggle {
-  position: fixed; top: 16px; right: 16px; z-index: 998;
+  position: fixed; top: calc(16px + env(safe-area-inset-top, 0px)); right: calc(16px + env(safe-area-inset-right, 0px)); z-index: 998;
   width: 40px; height: 40px; border-radius: 50%;
   display: grid; place-items: center; padding: 0; cursor: pointer;
   color: var(--gold-light); background: rgba(26,11,20,.88);
-  border: 1px solid #c9a76755; backdrop-filter: blur(10px);
+  border: 1px solid #c9a76755; -webkit-backdrop-filter: blur(10px); backdrop-filter: blur(10px);
   transition: color .2s, border-color .2s;
 }
 .music-toggle:hover { color: var(--gold); border-color: var(--gold); }
@@ -341,7 +348,7 @@ a { color: inherit; }
   box-shadow: 0 20px 60px rgba(0,0,0,.5), inset 0 0 0 7px rgba(26,11,20,.5), inset 0 0 0 8px rgba(201,167,103,.25);
   color: var(--gold); text-align: center;
   transform-origin: left center;
-  backface-visibility: hidden;
+  -webkit-backface-visibility: hidden; backface-visibility: hidden;
   transition: transform 1s cubic-bezier(.6,0,.2,1), opacity .4s ease .6s;
 }
 .env-body span { position: absolute; left: 0; right: 0; }
@@ -750,7 +757,7 @@ a { color: inherit; }
   font-style: italic;
   line-height: 1;
   cursor: default;
-  user-select: none;
+  -webkit-user-select: none; user-select: none;
 }
 .spriti-logo .sl-char {
   display: inline-block;
@@ -821,7 +828,7 @@ a { color: inherit; }
   background: var(--wine); border-radius: 8px;
   display: grid; place-items: center; overflow: hidden; cursor: pointer;
   box-shadow: inset 0 4px 10px rgba(0,0,0,.6);
-  user-select: none; -webkit-user-select: none;
+  -webkit-user-select: none; user-select: none;
 }
 .dial-window:focus-visible, .dial-btn:focus-visible, .lock-skip:focus-visible {
   outline: 2px solid var(--wine); outline-offset: 2px;
@@ -857,7 +864,7 @@ a { color: inherit; }
   border: 2px solid rgba(201,167,103,.5);
   display: flex; flex-direction: column; align-items: center; justify-content: flex-start;
   gap: 14px; padding-top: 90px; text-align: center; color: var(--gold);
-  transform-origin: left center; backface-visibility: hidden;
+  transform-origin: left center; -webkit-backface-visibility: hidden; backface-visibility: hidden;
   transition: transform 1.2s cubic-bezier(.6,0,.2,1), opacity .5s ease .8s, visibility 0s 1.3s;
 }
 .passport.open .pp-cover { transform: rotateY(-115deg); opacity: 0; visibility: hidden; pointer-events: none; }
@@ -1306,7 +1313,7 @@ a { color: inherit; }
   letter-spacing: 1.2em;
   padding: 8px 0;
   display: block;
-  user-select: none;
+  -webkit-user-select: none; user-select: none;
 }
 
 /* ─── RSVP — input focus line animation ─────────────── */
@@ -1489,7 +1496,7 @@ a { color: inherit; }
   .heading { font-size: clamp(2.2rem, 9vw, 3.4rem); }
 
   /* floating nav */
-  .float-nav { gap: 10px; padding: 8px 14px; bottom: 14px; }
+  .float-nav { gap: 10px; padding: 8px 14px; bottom: calc(14px + env(safe-area-inset-bottom, 0px)); }
   .float-nav a { font-size: .5rem; letter-spacing: .12em; }
 
   /* hero */
@@ -2994,6 +3001,63 @@ if (wishForm) {
     });
   }
   window.addEventListener("scroll", onScroll, { passive: true });
+})();
+
+/* ══════════════════════════════════════════════════════
+   12. RESUME WHERE THE GUEST LEFT OFF (survives refresh)
+══════════════════════════════════════════════════════ */
+(function() {
+  const KEY = "spritiResume";
+  const ppEl = document.getElementById("passport");
+  const lockWrapEl = document.getElementById("lockWrap");
+  let saved = null;
+  try { saved = JSON.parse(sessionStorage.getItem(KEY) || "null"); } catch (e) {}
+
+  function save() {
+    try {
+      sessionStorage.setItem(KEY, JSON.stringify({
+        y: Math.round(window.scrollY),
+        env: envelopeWrap.classList.contains("opened"),
+        scratch: revealed,
+        passport: !!ppEl && ppEl.classList.contains("show")
+      }));
+    } catch (e) {}
+  }
+
+  if (saved && saved.env) {
+    /* skip the passport cover without its fade */
+    envelopeWrap.style.transition = "none";
+    envelopeWrap.classList.add("opened");
+    startMusic();                         /* if the browser blocks it, the music button appears for a tap */
+
+    if (saved.scratch) {
+      revealed = true;
+      canvas.style.display = "none";
+      const hint = document.getElementById("scratchHint");
+      hint.textContent = "✦ REVEALED WITH LOVE · #SPRITI ✦";
+      hint.style.color = "#ead7aa";
+      hint.style.animation = "none";
+      updateRing(1);
+    }
+    if (saved.passport && ppEl && lockWrapEl) {
+      lockWrapEl.style.display = "none";
+      ppEl.classList.add("show", "open");
+      ppEl.querySelectorAll(".visa").forEach(v => v.classList.add("stamped"));
+    }
+
+    const goBack = () => window.scrollTo({ top: saved.y, left: 0, behavior: "instant" });
+    goBack();
+    window.addEventListener("load", () => { goBack(); setTimeout(goBack, 400); });
+  } else {
+    window.scrollTo(0, 0);
+  }
+
+  let timer = null;
+  window.addEventListener("scroll", () => {
+    if (timer) return;
+    timer = setTimeout(() => { timer = null; save(); }, 250);
+  }, { passive: true });
+  ["pagehide", "visibilitychange", "click"].forEach(ev => window.addEventListener(ev, () => setTimeout(save, ev === "click" ? 2500 : 0)));
 })();
 </script>
 </body>
