@@ -748,7 +748,14 @@ a { color: inherit; }
 }
 .chapter h3 { font-size: 2rem; margin: 9px 0; }
 .chapter p  { line-height: 1.85; color: #715f65; margin: 0; }
-.made-by { margin: 22px 0 0; font-size: .6rem; letter-spacing: .24em; text-transform: uppercase; color: rgba(234,215,170,.55); text-align: center; }
+.made-by { margin: 26px auto 0; max-width: 420px; text-align: center; }
+.made-by .mb-label { display: flex; align-items: center; gap: 10px; font-size: .5rem; letter-spacing: .34em; text-transform: uppercase; color: rgba(201,167,103,.6); }
+.made-by .mb-label::before, .made-by .mb-label::after { content: ""; flex: 1; height: 1px; background: rgba(201,167,103,.3); }
+.made-by .mb-names { display: flex; justify-content: center; align-items: center; gap: 14px; margin-top: 10px; }
+.made-by .mb-who { flex: 1; font-family: "Parisienne", cursive; font-size: 1.25rem; line-height: 1.2; color: var(--gold-light); }
+.made-by .mb-who small { display: block; font-family: "DM Sans", sans-serif; font-size: .46rem; letter-spacing: .26em; text-transform: uppercase; color: rgba(234,215,170,.5); margin-bottom: 3px; }
+.made-by .mb-amp { font-family: "Cormorant Garamond", serif; font-style: italic; color: var(--gold); font-size: 1rem; opacity: .8; }
+.made-by .mb-sub { margin-top: 10px; font-size: .5rem; letter-spacing: .22em; text-transform: uppercase; color: rgba(234,215,170,.4); }
 /* ─── #SPRITI ANIMATED LOGO ──────────────────────── */
 .spriti-logo {
   display: inline-flex;
@@ -2225,11 +2232,19 @@ a { color: inherit; }
   <div class="ell-signature">Sparsh &amp; Prakriti</div>
   <div class="rubber on-dark" style="--vc:#c9a767;margin-top:22px">Valid until forever</div>
   <p class="footer-tag"><span class="spriti-logo" style="font-size:.9rem"><span class="sl-char sl-s">#</span><span class="sl-char sl-s">S</span><span class="sl-char sl-p">P</span><span class="sl-char sl-mid">RITI</span></span> · 03 December 2026 · Bareilly</p>
-  <div class="hero-mrz" aria-hidden="true">
+  <div class="made-by">
+    <div class="mb-label">Issued by</div>
+    <div class="mb-names">
+      <div class="mb-who"><small>Dulhe ka</small>Bhai</div>
+      <span class="mb-amp" aria-hidden="true">&amp;</span>
+      <div class="mb-who"><small>Dulhan ka</small>Devar</div>
+    </div>
+    <div class="mb-sub">Made with love &amp; a lot of chaos</div>
+  </div>
+  <div class="hero-mrz" style="margin-top:22px" aria-hidden="true">
     P&lt;IND&lt;SPRITI&lt;&lt;SPARSH&lt;AND&lt;PRAKRITI&lt;&lt;&lt;&lt;&lt;&lt;<br>
     SP03122026&lt;&lt;FOREVER&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;
   </div>
-  <p class="made-by">Made by Dulhe ka Bhai, Dulhan ka Devar</p>
 </footer>
 
 <script>
